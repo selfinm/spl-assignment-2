@@ -16,9 +16,6 @@ public class DeveloprService extends MicroService {
     public DeveloperService(String name) {
         super("Change_This_Name");
         // TODO Implement this
-
-
-
     }
 
     @Override
