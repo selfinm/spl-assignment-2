@@ -77,7 +77,7 @@ public class MessageBusImpl implements MessageBus {
     public <T> Future<T> sendEvent(Event<T> e) {
         List<String> subscribers = messageSubscribers.get(e.getClass());
 
-        if (subscribers.isEmpty()) {
+        if (subscribers == null) {
             return null;
         }
 

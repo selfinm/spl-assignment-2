@@ -185,6 +185,8 @@ public abstract class MicroService implements Runnable {
 
             callbacks.get(msg.getClass()).call(msg);
         }
+
+        messageBus.unregister(this);
     }
 
 }
