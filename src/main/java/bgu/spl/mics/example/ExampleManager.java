@@ -32,14 +32,18 @@ public class ExampleManager {
                         case "start":
                             try {
                                 if (params.length < 3) {
-                                    throw new IllegalArgumentException("Expecting service type and id, supported types: " + serviceCreators.keySet());
+                                    throw new IllegalArgumentException(
+                                            "Expecting service type and id, supported types: "
+                                                    + serviceCreators.keySet());
                                 }
                                 ServiceCreator creator = serviceCreators.get(params[1]);
                                 if (creator == null) {
-                                    throw new IllegalArgumentException("unknown service type, supported types: " + serviceCreators.keySet());
+                                    throw new IllegalArgumentException(
+                                            "unknown service type, supported types: " + serviceCreators.keySet());
                                 }
 
-                                new Thread(creator.create(params[2], Arrays.copyOfRange(params, 3, params.length))).start();
+                                new Thread(creator.create(params[2], Arrays.copyOfRange(params, 3, params.length)))
+                                        .start();
                             } catch (IllegalArgumentException ex) {
                                 System.out.println("Error: " + ex.getMessage());
                             }

@@ -12,7 +12,7 @@ import bgu.spl.mics.MicroService;
  * You can add private fields and public methods to this class.
  * You MAY change constructor signatures and even add new public constructors.
  */
-public class DeveloprService extends MicroService {
+public class DeveloperService extends MicroService {
     public DeveloperService(String name) {
         super("Change_This_Name");
         // TODO Implement this
