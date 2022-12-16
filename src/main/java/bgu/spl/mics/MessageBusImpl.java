@@ -17,18 +17,18 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class MessageBusImpl implements MessageBus {
 
-    Map<String, Queue<Broadcast>> serviceBroadcasts;
-    Map<String, Queue<FullEvent<?>>> serviceEvents;
+    Map<String, Queue<? super Message>> serviceMessages;
     Map<Class<? extends Message>, List<String>> messageSubscribers;
     Map<Class<? extends Message>, Integer> roundRobinCounters;
+    Map<Event<?>, Future<?>> eventFutures;
 
     private static MessageBusImpl instance = null;
 
     private MessageBusImpl() {
-        serviceBroadcasts = Collections.synchronizedMap(new HashMap<>());
-        serviceEvents = Collections.synchronizedMap(new HashMap<>());
+        serviceMessages = Collections.synchronizedMap(new HashMap<>());
         messageSubscribers = Collections.synchronizedMap(new HashMap<>());
         roundRobinCounters = Collections.synchronizedMap(new HashMap<>());
+        eventFutures = Collections.synchronizedMap(new HashMap<>());
     }
 
     public static MessageBusImpl getInstance() {
@@ -49,7 +49,7 @@ public class MessageBusImpl implements MessageBus {
     }
 
     private void subscribeMicroservice(Class<? extends Message> type, MicroService m) {
-        if (!serviceBroadcasts.containsKey(m.getName())) {
+        if (!serviceMessages.containsKey(m.getName())) {
             // TODO: do we want to handle this differently
             System.out.println("Service wasn't registered, doing nothing");
             return;
@@ -70,13 +70,14 @@ public class MessageBusImpl implements MessageBus {
     @Override
     public void sendBroadcast(Broadcast b) {
         for (String microservice : messageSubscribers.get(b.getClass())) {
-            serviceBroadcasts.get(microservice).add(b);
+            serviceMessages.get(microservice).add(b);
         }
     }
 
     @Override
     public <T> Future<T> sendEvent(Event<T> e) {
         List<String> subscribers = messageSubscribers.get(e.getClass());
+
         roundRobinCounters.putIfAbsent(e.getClass(), Integer.valueOf(0));
         Integer eventCounter = roundRobinCounters.get(e.getClass());
 
@@ -84,24 +85,23 @@ public class MessageBusImpl implements MessageBus {
         eventCounter++;
         roundRobinCounters.put(e.getClass(), eventCounter);
 
-        FullEvent<T> fullEvent = new FullEvent<>(e, new Future<>());
+        serviceMessages.get(subscriber).add(e);
 
-        serviceEvents.get(subscriber).add(fullEvent);
+        Future<T> future = new Future<>();
+        eventFutures.put(e, future);
 
-        return fullEvent.getFuture();
+        return future;
     }
 
     @Override
     public void register(MicroService m) {
-        serviceBroadcasts.put(m.getName(), new ConcurrentLinkedQueue<>());
-        serviceEvents.put(m.getName(), new ConcurrentLinkedQueue<>());
+        serviceMessages.put(m.getName(), new ConcurrentLinkedQueue<>());
     }
 
     @Override
     public void unregister(MicroService m) {
         String name = m.getName();
-        serviceBroadcasts.remove(name);
-        serviceEvents.remove(name);
+        serviceMessages.remove(name);
 
         for (Map.Entry<?, List<String>> entry : messageSubscribers.entrySet()) {
             entry.getValue().remove(name);

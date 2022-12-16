@@ -15,8 +15,7 @@ public class TestMessageBusImpl {
         MessageBusImpl m = MessageBusImpl.getInstance();
         m.messageSubscribers.clear();
         m.roundRobinCounters.clear();
-        m.serviceBroadcasts.clear();
-        m.serviceEvents.clear();
+        m.serviceMessages.clear();
     }
 
     @Test
@@ -51,8 +50,8 @@ public class TestMessageBusImpl {
         ExampleBroadcast msg = new ExampleBroadcast("test");
         m.sendBroadcast(msg);
 
-        Assert.assertEquals(m.serviceBroadcasts.get(ms1.getName()).poll(), msg);
-        Assert.assertEquals(m.serviceBroadcasts.get(ms2.getName()).poll(), msg);
+        Assert.assertEquals(m.serviceMessages.get(ms1.getName()).poll(), msg);
+        Assert.assertEquals(m.serviceMessages.get(ms2.getName()).poll(), msg);
     }
 
     @Test
@@ -71,11 +70,11 @@ public class TestMessageBusImpl {
         ExampleEvent msg = new ExampleEvent("test");
         m.sendEvent(msg);
 
-        FullEvent<?> event = m.serviceEvents.get(ms1.getName()).poll();
+        ExampleEvent event = (ExampleEvent) m.serviceMessages.get(ms1.getName()).poll();
 
         Assert.assertNotNull(event);
-        Assert.assertEquals(msg, event.getEvent());
-        Assert.assertEquals(null, m.serviceEvents.get(ms2.getName()).poll());
+        Assert.assertEquals(msg, event);
+        Assert.assertEquals(null, m.serviceMessages.get(ms2.getName()).poll());
 
         Assert.assertEquals(Integer.valueOf(1), m.roundRobinCounters.get(ExampleEvent.class));
     }
@@ -98,8 +97,7 @@ public class TestMessageBusImpl {
 
         m.unregister(ms1);
 
-        Assert.assertEquals(null, m.serviceEvents.get(ms1.getName()));
-        Assert.assertEquals(null, m.serviceBroadcasts.get(ms1.getName()));
+        Assert.assertEquals(null, m.serviceMessages.get(ms1.getName()));
 
         Assert.assertFalse(m.messageSubscribers.get(ExampleEvent.class).contains(ms1.getName()));
         Assert.assertNotNull(m.roundRobinCounters.get(ExampleEvent.class));
