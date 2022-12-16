@@ -63,8 +63,7 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public <T> void complete(Event<T> e, T result) {
-        // TODO Auto-generated method stub
-
+        ((Future<T>) eventFutures.get(e)).resolve(result);
     }
 
     @Override
@@ -77,6 +76,10 @@ public class MessageBusImpl implements MessageBus {
     @Override
     public <T> Future<T> sendEvent(Event<T> e) {
         List<String> subscribers = messageSubscribers.get(e.getClass());
+
+        if (subscribers.isEmpty()) {
+            return null;
+        }
 
         roundRobinCounters.putIfAbsent(e.getClass(), Integer.valueOf(0));
         Integer eventCounter = roundRobinCounters.get(e.getClass());

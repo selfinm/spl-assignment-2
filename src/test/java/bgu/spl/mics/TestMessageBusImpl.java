@@ -1,5 +1,7 @@
 package bgu.spl.mics;
 
+import java.util.concurrent.TimeUnit;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
@@ -108,5 +110,22 @@ public class TestMessageBusImpl {
 
         Assert.assertNull(m.messageSubscribers.get(ExampleEvent.class));
         Assert.assertNull(m.roundRobinCounters.get(ExampleEvent.class));
+    }
+
+    @Test
+    public void testComplete() {
+        MessageBusImpl m = MessageBusImpl.getInstance();
+
+        MicroService ms1 = new ExampleEventHandlerService("ms1", new String[] { "10" });
+
+        m.register(ms1);
+        m.subscribeEvent(ExampleEvent.class, ms1);
+        ExampleEvent msg = new ExampleEvent("foo");
+        Future<String> future = m.sendEvent(msg);
+
+        m.complete(msg, "bar");
+
+        Assert.assertTrue(future.isDone());
+        Assert.assertEquals("bar", future.get());
     }
 }
