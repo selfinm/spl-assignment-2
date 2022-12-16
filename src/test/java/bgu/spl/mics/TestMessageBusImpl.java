@@ -1,5 +1,6 @@
 package bgu.spl.mics;
 
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -8,6 +9,15 @@ import bgu.spl.mics.example.messages.ExampleEvent;
 import bgu.spl.mics.example.services.ExampleEventHandlerService;
 
 public class TestMessageBusImpl {
+
+    @After
+    public void after() {
+        MessageBusImpl m = MessageBusImpl.getInstance();
+        m.messageSubscribers.clear();
+        m.roundRobinCounters.clear();
+        m.serviceBroadcasts.clear();
+        m.serviceEvents.clear();
+    }
 
     @Test
     public void testSubscribeMicroservice() {
@@ -43,5 +53,30 @@ public class TestMessageBusImpl {
 
         Assert.assertEquals(m.serviceBroadcasts.get(ms1.getName()).poll(), msg);
         Assert.assertEquals(m.serviceBroadcasts.get(ms2.getName()).poll(), msg);
+    }
+
+    @Test
+    public void testSendEvent() {
+        MessageBusImpl m = MessageBusImpl.getInstance();
+
+        MicroService ms1 = new ExampleEventHandlerService("ms1", new String[] { "10" });
+        MicroService ms2 = new ExampleEventHandlerService("ms2", new String[] { "10" });
+
+        m.register(ms1);
+        m.register(ms2);
+
+        m.subscribeEvent(ExampleEvent.class, ms1);
+        m.subscribeEvent(ExampleEvent.class, ms2);
+
+        ExampleEvent msg = new ExampleEvent("test");
+        m.sendEvent(msg);
+
+        FullEvent<?> event = m.serviceEvents.get(ms1.getName()).poll();
+
+        Assert.assertNotNull(event);
+        Assert.assertEquals(msg, event.getEvent());
+        Assert.assertEquals(null, m.serviceEvents.get(ms2.getName()).poll());
+
+        Assert.assertEquals(Integer.valueOf(1), m.roundRobinCounters.get(ExampleEvent.class));
     }
 }

@@ -17,92 +17,107 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class MessageBusImpl implements MessageBus {
 
-	Map<String, Queue<Broadcast>> serviceBroadcasts;
-	Map<String, Queue<FullEvent<?>>> serviceEvents;
-	Map<Class<? extends Message>, List<String>> messageSubscribers;
-	Map<Class<Event<?>>, Integer> roundRobinCounters;
+    Map<String, Queue<Broadcast>> serviceBroadcasts;
+    Map<String, Queue<FullEvent<?>>> serviceEvents;
+    Map<Class<? extends Message>, List<String>> messageSubscribers;
+    Map<Class<? extends Message>, Integer> roundRobinCounters;
 
-	private static MessageBusImpl instance = null;
+    private static MessageBusImpl instance = null;
 
-	private MessageBusImpl() {
-		serviceBroadcasts = Collections.synchronizedMap(new HashMap<>());
-		serviceEvents = Collections.synchronizedMap(new HashMap<>());
-		messageSubscribers = Collections.synchronizedMap(new HashMap<>());
-	}
+    private MessageBusImpl() {
+        serviceBroadcasts = Collections.synchronizedMap(new HashMap<>());
+        serviceEvents = Collections.synchronizedMap(new HashMap<>());
+        messageSubscribers = Collections.synchronizedMap(new HashMap<>());
+        roundRobinCounters = Collections.synchronizedMap(new HashMap<>());
+    }
 
-	public static MessageBusImpl getInstance() {
-		if (instance == null)
-			instance = new MessageBusImpl();
+    public static MessageBusImpl getInstance() {
+        if (instance == null)
+            instance = new MessageBusImpl();
 
-		return instance;
-	}
+        return instance;
+    }
 
-	@Override
-	public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
-		subscribeMicroservice(type, m);
-	}
+    @Override
+    public <T> void subscribeEvent(Class<? extends Event<T>> type, MicroService m) {
+        subscribeMicroservice(type, m);
+    }
 
-	@Override
-	public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
-		subscribeMicroservice(type, m);
-	}
+    @Override
+    public void subscribeBroadcast(Class<? extends Broadcast> type, MicroService m) {
+        subscribeMicroservice(type, m);
+    }
 
-	private void subscribeMicroservice(Class<? extends Message> type, MicroService m) {
-		if (!serviceBroadcasts.containsKey(m.getName())) {
-			// TODO: do we want to handle this differently
-			System.out.println("Service wasn't registered, doing nothing");
-			return;
-		}
+    private void subscribeMicroservice(Class<? extends Message> type, MicroService m) {
+        if (!serviceBroadcasts.containsKey(m.getName())) {
+            // TODO: do we want to handle this differently
+            System.out.println("Service wasn't registered, doing nothing");
+            return;
+        }
 
-		List<String> def = Collections.synchronizedList(new ArrayList<>());
+        List<String> def = Collections.synchronizedList(new ArrayList<>());
 
-		messageSubscribers.putIfAbsent(type, def);
-		messageSubscribers.get(type).add(m.getName());
-	}
+        messageSubscribers.putIfAbsent(type, def);
+        messageSubscribers.get(type).add(m.getName());
+    }
 
-	@Override
-	public <T> void complete(Event<T> e, T result) {
-		// TODO Auto-generated method stub
+    @Override
+    public <T> void complete(Event<T> e, T result) {
+        // TODO Auto-generated method stub
 
-	}
+    }
 
-	@Override
-	public void sendBroadcast(Broadcast b) {
-		for (String microservice : messageSubscribers.get((Class<? extends Message>) b.getClass())) {
-			serviceBroadcasts.get(microservice).add(b);
-		}
-	}
+    @Override
+    public void sendBroadcast(Broadcast b) {
+        for (String microservice : messageSubscribers.get(b.getClass())) {
+            serviceBroadcasts.get(microservice).add(b);
+        }
+    }
 
-	@Override
-	public <T> Future<T> sendEvent(Event<T> e) {
-		List<String> subscribers = messageSubscribers.get(e.getClass());
-		Integer eventCounter = roundRobinCounters.get(e.getClass());
+    @Override
+    public <T> Future<T> sendEvent(Event<T> e) {
+        List<String> subscribers = messageSubscribers.get(e.getClass());
+        roundRobinCounters.putIfAbsent(e.getClass(), Integer.valueOf(0));
+        Integer eventCounter = roundRobinCounters.get(e.getClass());
 
-		String subscriber = subscribers.get(eventCounter % subscribers.size());
-		eventCounter++;
+        String subscriber = subscribers.get(eventCounter % subscribers.size());
+        eventCounter++;
+        roundRobinCounters.put(e.getClass(), eventCounter);
 
-		FullEvent<T> fullEvent = new FullEvent<>(e, new Future<>());
+        FullEvent<T> fullEvent = new FullEvent<>(e, new Future<>());
 
-		serviceEvents.get(subscriber).add(fullEvent);
+        serviceEvents.get(subscriber).add(fullEvent);
 
-		return fullEvent.getFuture();
-	}
+        return fullEvent.getFuture();
+    }
 
-	@Override
-	public void register(MicroService m) {
-		serviceBroadcasts.put(m.getName(), new ConcurrentLinkedQueue<>());
-	}
+    @Override
+    public void register(MicroService m) {
+        serviceBroadcasts.put(m.getName(), new ConcurrentLinkedQueue<>());
+        serviceEvents.put(m.getName(), new ConcurrentLinkedQueue<>());
+    }
 
-	@Override
-	public void unregister(MicroService m) {
-		// TODO Auto-generated method stub
+    @Override
+    public void unregister(MicroService m) {
+        String name = m.getName();
+        serviceBroadcasts.remove(name);
+        serviceEvents.remove(name);
 
-	}
+        for (Map.Entry<?, List<String>> entry : messageSubscribers.entrySet()) {
+            entry.getValue().remove(name);
 
-	@Override
-	public Message awaitMessage(MicroService m) throws InterruptedException {
-		// TODO Auto-generated method stub
-		return null;
-	}
+            if (entry.getValue().isEmpty()) {
+                messageSubscribers.remove(entry.getKey());
+                roundRobinCounters.remove(entry.getKey());
+            }
+        }
+
+    }
+
+    @Override
+    public Message awaitMessage(MicroService m) throws InterruptedException {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }
