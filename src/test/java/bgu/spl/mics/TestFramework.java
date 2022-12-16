@@ -69,6 +69,8 @@ public class TestFramework {
         ms1.start();
         ms2.start();
 
+        // TODO: do we need to force the message bus to wait for all services to be
+        // registered before we allow it to send messages?
         while (!m.serviceMessages.containsKey("slp-1") || !m.serviceMessages.containsKey("slp-2")) {
             try {
                 Thread.sleep(10);
