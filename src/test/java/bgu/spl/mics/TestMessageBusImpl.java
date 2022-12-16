@@ -79,4 +79,36 @@ public class TestMessageBusImpl {
 
         Assert.assertEquals(Integer.valueOf(1), m.roundRobinCounters.get(ExampleEvent.class));
     }
+
+    @Test
+    public void testUnregister() {
+        MessageBusImpl m = MessageBusImpl.getInstance();
+
+        MicroService ms1 = new ExampleEventHandlerService("ms1", new String[] { "10" });
+        MicroService ms2 = new ExampleEventHandlerService("ms2", new String[] { "10" });
+
+        m.register(ms1);
+        m.register(ms2);
+
+        m.subscribeEvent(ExampleEvent.class, ms1);
+        m.subscribeEvent(ExampleEvent.class, ms2);
+
+        m.sendEvent(new ExampleEvent("test1"));
+        m.sendEvent(new ExampleEvent("test2"));
+
+        m.unregister(ms1);
+
+        Assert.assertEquals(null, m.serviceEvents.get(ms1.getName()));
+        Assert.assertEquals(null, m.serviceBroadcasts.get(ms1.getName()));
+
+        Assert.assertFalse(m.messageSubscribers.get(ExampleEvent.class).contains(ms1.getName()));
+        Assert.assertNotNull(m.roundRobinCounters.get(ExampleEvent.class));
+
+        Assert.assertTrue(m.messageSubscribers.get(ExampleEvent.class).contains(ms2.getName()));
+
+        m.unregister(ms2);
+
+        Assert.assertNull(m.messageSubscribers.get(ExampleEvent.class));
+        Assert.assertNull(m.roundRobinCounters.get(ExampleEvent.class));
+    }
 }

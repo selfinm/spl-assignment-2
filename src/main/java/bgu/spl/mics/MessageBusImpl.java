@@ -108,6 +108,8 @@ public class MessageBusImpl implements MessageBus {
 
             if (entry.getValue().isEmpty()) {
                 messageSubscribers.remove(entry.getKey());
+
+                // if the event is a Broadcast, this has no effect
                 roundRobinCounters.remove(entry.getKey());
             }
         }
