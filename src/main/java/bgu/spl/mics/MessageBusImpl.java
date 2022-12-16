@@ -88,10 +88,10 @@ public class MessageBusImpl implements MessageBus {
         eventCounter++;
         roundRobinCounters.put(e.getClass(), eventCounter);
 
-        serviceMessages.get(subscriber).add(e);
-
         Future<T> future = new Future<>();
         eventFutures.put(e, future);
+
+        serviceMessages.get(subscriber).add(e);
 
         return future;
     }
