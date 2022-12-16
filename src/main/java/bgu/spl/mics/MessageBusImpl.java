@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class MessageBusImpl implements MessageBus {
 
-    Map<String, Queue<? super Message>> serviceMessages;
+    Map<String, Queue<Message>> serviceMessages;
     Map<Class<? extends Message>, List<String>> messageSubscribers;
     Map<Class<? extends Message>, Integer> roundRobinCounters;
     Map<Event<?>, Future<?>> eventFutures;
@@ -121,8 +121,16 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public Message awaitMessage(MicroService m) throws InterruptedException {
-        // TODO Auto-generated method stub
-        return null;
+        if (!serviceMessages.containsKey(m.getName())) {
+            throw new IllegalStateException("m was never registered");
+        }
+
+        while (true) {
+            Message msg = serviceMessages.get(m.getName()).poll();
+            if (msg != null) {
+                return msg;
+            }
+        }
     }
 
 }
