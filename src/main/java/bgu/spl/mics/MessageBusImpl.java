@@ -17,13 +17,16 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class MessageBusImpl implements MessageBus {
 
-	Map<String, Queue<Message>> serviceQueues;
+	Map<String, Queue<Broadcast>> serviceBroadcasts;
+	Map<String, Queue<FullEvent<?>>> serviceEvents;
 	Map<Class<? extends Message>, List<String>> messageSubscribers;
+	Map<Class<Event<?>>, Integer> roundRobinCounters;
 
 	private static MessageBusImpl instance = null;
 
 	private MessageBusImpl() {
-		serviceQueues = Collections.synchronizedMap(new HashMap<>());
+		serviceBroadcasts = Collections.synchronizedMap(new HashMap<>());
+		serviceEvents = Collections.synchronizedMap(new HashMap<>());
 		messageSubscribers = Collections.synchronizedMap(new HashMap<>());
 	}
 
@@ -45,7 +48,7 @@ public class MessageBusImpl implements MessageBus {
 	}
 
 	private void subscribeMicroservice(Class<? extends Message> type, MicroService m) {
-		if (!serviceQueues.containsKey(m.getName())) {
+		if (!serviceBroadcasts.containsKey(m.getName())) {
 			// TODO: do we want to handle this differently
 			System.out.println("Service wasn't registered, doing nothing");
 			return;
@@ -65,19 +68,29 @@ public class MessageBusImpl implements MessageBus {
 
 	@Override
 	public void sendBroadcast(Broadcast b) {
-		// TODO Auto-generated method stub
-
+		for (String microservice : messageSubscribers.get((Class<? extends Message>) b.getClass())) {
+			serviceBroadcasts.get(microservice).add(b);
+		}
 	}
 
 	@Override
 	public <T> Future<T> sendEvent(Event<T> e) {
-		// TODO Auto-generated method stub
-		return null;
+		List<String> subscribers = messageSubscribers.get(e.getClass());
+		Integer eventCounter = roundRobinCounters.get(e.getClass());
+
+		String subscriber = subscribers.get(eventCounter % subscribers.size());
+		eventCounter++;
+
+		FullEvent<T> fullEvent = new FullEvent<>(e, new Future<>());
+
+		serviceEvents.get(subscriber).add(fullEvent);
+
+		return fullEvent.getFuture();
 	}
 
 	@Override
 	public void register(MicroService m) {
-		serviceQueues.put(m.getName(), new ConcurrentLinkedQueue<>());
+		serviceBroadcasts.put(m.getName(), new ConcurrentLinkedQueue<>());
 	}
 
 	@Override
