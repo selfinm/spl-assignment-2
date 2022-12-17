@@ -1,6 +1,17 @@
 package bgu.spl.mics.application.services;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
+import bgu.spl.mics.application.messages.PublishResultsEvent;
+import bgu.spl.mics.application.messages.TestModelEvent;
+import bgu.spl.mics.application.messages.TrainModelEvent;
+import bgu.spl.mics.application.objects.Developer;
+import bgu.spl.mics.application.objects.Model;
+import bgu.spl.mics.application.objects.Model.Results;
 
 /**
  * developer is responsible for sending the {@link TrainModelEvent},
@@ -13,14 +24,27 @@ import bgu.spl.mics.MicroService;
  * You MAY change constructor signatures and even add new public constructors.
  */
 public class DeveloperService extends MicroService {
-    public DeveloperService(String name) {
-        super("Change_This_Name");
-        // TODO Implement this
+    private Developer developer;
+
+    public DeveloperService(String name, Developer developer) {
+        super("DeveloperService");
+
+        this.developer = developer;
     }
 
     @Override
     protected void initialize() {
-        // TODO Implement this
+        subscribeBroadcast(PublishConferenceBroadcast.class, e -> {
+        });
+
+        for (Model model : developer.getModels()) {
+            Model trainedModel = sendEvent(new TrainModelEvent<>(model)).get();
+            Model testedModel = sendEvent(new TestModelEvent(trainedModel)).get();
+
+            if (testedModel.getResults() == Results.Good) {
+                sendEvent(new PublishResultsEvent<>(testedModel)).get();
+            }
+        }
 
     }
 }
