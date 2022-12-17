@@ -3,6 +3,8 @@ package bgu.spl.mics.application.services;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import javax.print.attribute.standard.MediaSize.NA;
+
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
@@ -25,8 +27,8 @@ public class TimeService extends MicroService {
     private int speed, duration;
     private long time;
 
-    public TimeService(int speed, int duration) {
-        super("TimeService");
+    public TimeService(String name, int speed, int duration) {
+        super(name);
 
         this.speed = speed;
         this.duration = duration;

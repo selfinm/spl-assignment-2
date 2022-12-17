@@ -27,7 +27,7 @@ public class DeveloperService extends MicroService {
     private Developer developer;
 
     public DeveloperService(String name, Developer developer) {
-        super("DeveloperService");
+        super(name);
 
         this.developer = developer;
     }
