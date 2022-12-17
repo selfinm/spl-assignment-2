@@ -2,42 +2,25 @@ package bgu.spl.mics.application.objects;
 
 /**
  * Passive object representing a data used by a model.
- * Add fields and methods to this class as you see fit (including public methods and constructors).
+ * Add fields and methods to this class as you see fit (including public methods
+ * and constructors).
  */
-
 public class DataBatch {
 
+    public static int size = 1000;
     private Data data;
-    private int start_index;
-    private GPU currentGPU;
-    boolean usedForTraining = false;
-    boolean proccessed = false;
+    private int startIndex;
 
-    public DataBatch(Data data, int start_index) {
+    public DataBatch(Data data, int startIndex) {
         this.data = data;
-        this.start_index = start_index;
+        this.startIndex = startIndex;
     }
 
     public Data getData() {
         return data;
     }
 
-    public int getStart_index() {
-        return start_index;
-    }
-
-    public GPU getCurrentGPU() {
-        return currentGPU;
-    }
-
-    public boolean isUsedForTraining() {
-        return usedForTraining;
-    }
-
-    public void setUsedForTraining_(boolean usedForTraining) {
-        this.usedForTraining = usedForTraining;
-    }
-    public void proccessed(){
-        proccessed=true;
+    public int getStartIndex() {
+        return startIndex;
     }
 }

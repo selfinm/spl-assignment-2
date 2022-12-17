@@ -1,5 +1,7 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.Optional;
+
 /**
  * Passive object representing a data used by a model.
  * Add fields and methods to this class as you see fit (including public methods
@@ -8,7 +10,8 @@ package bgu.spl.mics.application.objects;
 public class Data {
     private Type type;
     private int processed;
-    private Model model;
+    private int size;
+    private int offset;
 
     /**
      * Enum representing the Data type.
@@ -18,20 +21,16 @@ public class Data {
 
     }
 
-    private int size;
-
     public Data(Type type, int size) {
-        this.processed = 0;
         this.type = type;
         this.size = size;
+
+        processed = 0;
+        offset = 0;
     }
 
     public int getProcessed() {
         return processed;
-    }
-
-    public void setProcessed(int processed) {
-        this.processed = processed;
     }
 
     public int getSize() {
@@ -42,11 +41,22 @@ public class Data {
         return type;
     }
 
-    public Model getModel() {
-        return model;
+    public Optional<DataBatch> getNextBatch() {
+        if (offset >= size) {
+            return Optional.empty();
+        } else {
+            DataBatch nextBatch = new DataBatch(this, processed);
+            offset += DataBatch.size;
+
+            return Optional.of(nextBatch);
+        }
     }
 
-    public void setModel(Model model) {
-        this.model = model;
+    public boolean done() {
+        return processed >= size;
+    }
+
+    public void process(int amount) {
+        processed += amount;
     }
 }

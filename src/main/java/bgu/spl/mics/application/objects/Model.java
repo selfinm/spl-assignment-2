@@ -25,16 +25,13 @@ public class Model {
     @SerializedName("type")
     @Expose
     private Data.Type type;
-
     @SerializedName("size")
     @Expose
     private int size;
+
     private Developer developer;
     private Status status = Status.PreTrained;
     private Results results = Results.None;
-    private Boolean published;
-    private int trainedData = 0;
-    private GPU trainerGPU;
     private Data data;
 
     public Model(String name, Data.Type type, int size) {
@@ -46,14 +43,7 @@ public class Model {
     public void init() {
         this.status = Status.PreTrained;
         this.results = Results.None;
-        this.published = false;
-
         data = new Data(type, size);
-        data.setModel(this);
-    }
-
-    public void test() {
-        System.out.println("hello");
     }
 
     public Status getStatus() {
@@ -88,14 +78,6 @@ public class Model {
         return data;
     }
 
-    public GPU getTrainerGPU() {
-        return trainerGPU;
-    }
-
-    public void setTrainerGPU(GPU trainerGPU) {
-        this.trainerGPU = trainerGPU;
-    }
-
     public int getSize() {
         return size;
     }
@@ -106,5 +88,9 @@ public class Model {
 
     public void setType(Data.Type type) {
         this.type = type;
+    }
+
+    public boolean trained() {
+        return this.data.done();
     }
 }

@@ -1,132 +1,95 @@
 package bgu.spl.mics.application.objects;
-import bgu.spl.mics.application.services.GPUService;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.Queue;
+
+import bgu.spl.mics.Future;
 
 /**
  * Passive object representing a single GPU.
  * Add all the fields described in the assignment as private fields.
- * Add fields and methods to this class as you see fit (including public methods and constructors).
+ * Add fields and methods to this class as you see fit (including public methods
+ * and constructors).
  */
 public class GPU {
-
-
     /**
      * Enum representing the type of the GPU.
      */
-    public enum Type {RTX3090, RTX2080, GTX1080}
+    enum Type {
+        RTX3090, RTX2080, GTX1080
+    }
 
     private Type type;
-    private int time;
-    private int trainRate;
-    private int size;
-    private int finishTime;
-    private Queue<DataBatch> vram;
-    private boolean curentlyTraining = false;
-    private int ActiveTime = 0;
-    private ArrayList<String> trainedModel;
-    private Thread gpuServiceThread;
+
+    private Cluster cluster;
+
+    private Queue<DataBatch> backlog;
+    private List<Future<Integer>> inFlight;
 
     public GPU(Type type) {
         this.type = type;
     }
 
-    public void init(int i){
-        time = 0;
-        vram = new LinkedList<DataBatch>(); //TODO:synchronized
-        trainRate = setTrainRate();
-        GPUService gpuService = new GPUService("CPUservice " + i);
-        Thread t = new Thread(gpuService);
-        gpuServiceThread = t;
-        t.start();
-    }
+    public void trainBatch(Model model) {
+        updateBacklog(model);
 
-    public Thread getGpuServiceThread() {
-        return gpuServiceThread;
-    }
+        // update in flight
+        List<Integer> processedAmount = updateInFlight();
 
-    public void tick() {
-        time++;
-        if (! vram.isEmpty()){
-
+        for (Integer amount : processedAmount) {
+            model.getData().process(amount);
         }
     }
 
-    final private int setTrainRate(){
-        int rate = 0;
-        switch (this.type){
+    private List<Integer> updateInFlight() {
+        // check if futures have resolved
+        // remove resolved futures from in flight
+        List<Integer> processedAmounts = List.of();
+        for (Future<Integer> future : inFlight) {
+            if (future.isDone()) {
+                inFlight.remove(future);
+                processedAmounts.add(future.get());
+            }
+        }
+
+        // send as many new batches as possible
+        int amountToSend = maxBatches() - inFlight.size();
+        for (int i = 0; i < amountToSend; i++) {
+            DataBatch nextBatch = backlog.poll();
+            if (nextBatch == null)
+                break;
+
+            inFlight.add(this.cluster.processDataBatch(nextBatch));
+        }
+
+        // return amounts processed in resolved futures
+        return processedAmounts;
+    }
+
+    private void updateBacklog(Model model) {
+        Data data = model.getData();
+        DataBatch nextBatch = data.getNextBatch().get();
+
+        if (nextBatch == null) {
+            throw new IllegalStateException("Tried to get next batch of done Data");
+        }
+
+        backlog.add(nextBatch);
+    }
+
+    private int maxBatches() {
+        switch (type) {
             case RTX3090:
-                rate = 1;
-                break;
-            case RTX2080:
-                rate = 2;
-                break;
+                return 32;
             case GTX1080:
-                rate = 4;
-                break;
-        }
-        return rate;
-    }
-
-    public Queue<DataBatch> splitToDataBatches(Data data) {
-        Queue<DataBatch> splittedData = new LinkedList<>();
-        int numberOfChunks = data.getSize() / 1000;
-        for (int i = 0; i < numberOfChunks; i++) {
-            splittedData.add(new DataBatch(data, i));
+                return 16;
+            case RTX2080:
+                return 8;
         }
 
-
-        return splittedData;
+        throw new UnsupportedOperationException("unknown GPU type " + this.type.toString());
     }
 
-    public void trainModel(DataBatch dataBatch){
-         finishTime = time + trainRate;
-         curentlyTraining = true;
-    }
-
-    public int getFinishTime() {
-        return finishTime;
-    }
-
-    public int getSize() {
-        return size;
-    }
-
-    public boolean isCurentlyTraining() {
-        return curentlyTraining;
-    }
-
-    public void setCurentlyTraining(boolean curentlyTraining) {
-        this.curentlyTraining = curentlyTraining;
-    }
-
-    public Queue<DataBatch> getVram() {
-        return vram;
-    }
-
-    public void setVram(Queue<DataBatch> vram) {
-        this.vram = vram;
-    }
-
-    public int getTime() {
-        return time;
-    }
-
-    public int getActiveTime() {
-        return ActiveTime;
-    }
-
-    public void updateGPUActiveTime(){
-        ActiveTime++;
-    };
-
-    public ArrayList<String> getTrainedModels() {
-        return trainedModel;
-    }
-
-    public void addTrainedModel(String modelName){
-        trainedModel.add(modelName);
-    }
 }
