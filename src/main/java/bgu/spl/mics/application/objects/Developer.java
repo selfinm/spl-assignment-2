@@ -1,10 +1,9 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.application.services.DeveloperService;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Passive object representing single developer.
@@ -26,52 +25,24 @@ public class Developer {
     @SerializedName("status")
     @Expose
     private Position status;
-    @SerializedName("models")
+    @SerializedName("publications")
     @Expose
-    private ArrayList<Model> models;
-    private ArrayList<Model> publishedModels;
-    private  int papersRead;
-    private Thread studentServiceThread;
+    private Integer publications;
+    @SerializedName("papersRead")
+    @Expose
+    private int papersRead;
 
+    private List<Model> models;
 
-    public Developer(String name, String department, Degree status, ArrayList<Model> models) {
+    public Developer(String name, String department, Position status, List<Model> models) {
         this.name = name;
         this.department = department;
         this.status = status;
+
         this.models = models;
     }
 
-    public void init(int i){
-        this.papersRead = 0;
-        DeveloperService developerService = new DeveloperService("student " + i,this);
-        Thread t = new Thread(studentService);
-        developerServiceThread = t;
-        t.start();
-    }
-
-    public Thread getStudentServiceThread() {
-        return studentServiceThread;
-    }
-
-    public ArrayList<Model> getModels() {
-        return this.models;
-    }
-
-    public Position getDegree() {
-        return status;
-    }
-
-    public void read(int numberOfPublications) {
-        papersRead += numberOfPublications;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void addPublishedModel(Model model){
-        publishedModels.add(model);
+    public List<Model> getModels() {
+        return models;
     }
 }
-
-
