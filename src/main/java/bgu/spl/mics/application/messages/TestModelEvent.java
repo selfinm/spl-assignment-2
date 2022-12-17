@@ -9,4 +9,12 @@ public class TestModelEvent implements Event<Model> {
     public TestModelEvent(Model model) {
         this.model = model;
     }
+
+    public Model getModel() {
+        return model;
+    }
+
+    public void setModel(Model model) {
+        this.model = model;
+    }
 }

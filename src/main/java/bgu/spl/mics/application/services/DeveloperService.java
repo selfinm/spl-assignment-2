@@ -38,11 +38,11 @@ public class DeveloperService extends MicroService {
         });
 
         for (Model model : developer.getModels()) {
-            Model trainedModel = sendEvent(new TrainModelEvent<>(model)).get();
+            Model trainedModel = sendEvent(new TrainModelEvent(model)).get();
             Model testedModel = sendEvent(new TestModelEvent(trainedModel)).get();
 
             if (testedModel.getResults() == Results.Good) {
-                sendEvent(new PublishResultsEvent<>(testedModel)).get();
+                sendEvent(new PublishResultsEvent(testedModel)).get();
             }
         }
 
