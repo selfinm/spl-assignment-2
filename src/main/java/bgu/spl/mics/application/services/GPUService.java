@@ -37,6 +37,7 @@ public class GPUService extends MicroService {
     }
 
     private void handleTrainModelEvent(TrainModelEvent event) {
+        event.getModel().setStatus(Model.Status.PreTrained);
         backlog.add(event);
     }
 
@@ -54,6 +55,7 @@ public class GPUService extends MicroService {
         gpu.trainBatch(model);
 
         if (model.trained()) {
+            model.setStatus(Model.Status.Trained);
             complete(currentEvent, model);
             currentEvent = null;
         }

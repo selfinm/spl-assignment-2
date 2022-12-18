@@ -73,24 +73,26 @@ public class GPU {
     }
 
     public void trainBatch(Model model) {
-        System.out.println("GPU ticks left: " + batchesTicksLeft.values().stream().mapToInt(Integer::intValue).sum());
-
         // save next batch to disk, if data is not done
         Optional<DataBatch> nextBatch = model.getData().getNextBatch();
         if (nextBatch.isPresent()) {
             disk.add(nextBatch.get());
         }
 
-        // TODO: what is model status???
-        // the models data is "pre-processed" in the CPUs and also the processed
-        // batches are used to train the model, POSSIBLY AT THE SAME TIME, so what
-        // is the status of the model?
-        // maybe we need to wait for all DataBatches to be "pre-processed" before we
-        // train the model, by "saving them to disk"?
-
         // apply processed batches results
         Optional<Collection<DataBatch>> processedBatches = cluster.popProcessedBatches(this);
         if (processedBatches.isPresent()) {
+            // TODO: what is model status???
+            // the models data is "pre-processed" in the CPUs and also the processed
+            // batches are used to train the model, POSSIBLY AT THE SAME TIME, so what
+            // is the status of the model?
+            // maybe we need to wait for all DataBatches to be "pre-processed" before we
+            // train the model, by "saving them to disk"?
+            // right now, "Training", means that at least one batch was used to
+            // "train" the model, even though more batches might still be being
+            // "pre-processed"
+            model.setStatus(Model.Status.Training);
+
             for (DataBatch batch : processedBatches.get()) {
                 batchesInTraining.add(batch);
                 batchesTicksLeft.put(batch, gpuTicks);

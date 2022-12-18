@@ -37,9 +37,6 @@ public class CPU {
     }
 
     public void tick() {
-        System.out.println("CPU (" + cores + ") ticks left: "
-                + batchesTicksLeft.values().stream().mapToInt(Integer::intValue).sum());
-
         for (DataBatch batch : data) {
             int ticksLeft = batchesTicksLeft.getOrDefault(batch, calcBatchTicks(batch.getData().getType()));
             batchesTicksLeft.put(batch, ticksLeft - 1);
