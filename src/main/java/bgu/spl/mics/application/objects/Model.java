@@ -31,10 +31,9 @@ public class Model {
     @Expose
     private int size;
 
-    private Status status = Status.PreTrained;
-    private Results results = Results.None;
-
     private Data data;
+    private Status status;
+    private Results results;
 
     public Model(String name, Data.Type type, int size) {
         this.name = name;
@@ -42,6 +41,7 @@ public class Model {
         this.size = size;
 
         data = new Data(type, size);
+        status = Status.PreTrained;
         results = Results.None;
     }
 
