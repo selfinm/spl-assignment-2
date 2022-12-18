@@ -2,7 +2,7 @@ package bgu.spl.mics.application.objects;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Queue;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -15,12 +15,21 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CPU {
 
     private int cores;
-    // TODO: is it ok to make data a Queue?
-    // if not, make it a collection and just don't use it
-    private Queue<DataBatch> data;
+    /**
+     * From the project spec:
+     * When a CPU finishes processing a batch, it sends the Cluster the processed
+     * batch, and takes a new batch for processing.
+     * </p>
+     * So why is data a collection and not just a DataBatch?
+     */
+    private Collection<DataBatch> data;
     private Cluster cluster;
 
     private Map<DataBatch, Integer> batchesTicksLeft;
+    /**
+     * Using this instead of data, since we don't need a collection
+     */
+    private Optional<DataBatch> dataBatch;
 
     public CPU(int cores) {
         this.cores = cores;
@@ -30,6 +39,7 @@ public class CPU {
         cluster.addCpu(this);
 
         batchesTicksLeft = new ConcurrentHashMap<>();
+        dataBatch = Optional.empty();
     }
 
     public void submitDataBatch(DataBatch batch) {
@@ -40,10 +50,15 @@ public class CPU {
     }
 
     public void tick() {
-        DataBatch batch = data.peek();
-        if (batch == null) {
+        // get next batch from cluster if needed
+        dataBatch = dataBatch.isPresent() ? dataBatch : cluster.getNextDataBatch();
+
+        // if no new batches are available, we do nothing
+        if (!dataBatch.isPresent()) {
             return;
         }
+
+        DataBatch batch = dataBatch.get();
 
         int ticksLeft = batchesTicksLeft.getOrDefault(batch, calcBatchTicks(batch.getData().getType()));
         batchesTicksLeft.put(batch, ticksLeft - 1);

@@ -31,10 +31,9 @@ public class Cluster {
     private AtomicInteger cpuTimeUnitsUsed;
     private AtomicInteger gpuTimeUnitsUsed;
 
-    private AtomicInteger roundRobinCounter;
-
     private Map<GPU, Collection<DataBatch>> processedBatches;
     private Map<DataBatch, GPU> batchSubmitters;
+    private ConcurrentLinkedQueue<DataBatch> backlog;
 
     /**
      * Retrieves the single instance of this class.
@@ -59,10 +58,10 @@ public class Cluster {
         cpuTimeUnitsUsed = new AtomicInteger(0);
         gpuTimeUnitsUsed = new AtomicInteger(0);
 
-        roundRobinCounter = new AtomicInteger(0);
-
         processedBatches = new ConcurrentHashMap<>();
         batchSubmitters = new ConcurrentHashMap<>();
+
+        backlog = new ConcurrentLinkedQueue<>();
     }
 
     public synchronized void addGpu(GPU gpu) {
@@ -75,9 +74,11 @@ public class Cluster {
 
     public void submitDataBatch(DataBatch batch, GPU submitter) {
         batchSubmitters.put(batch, submitter);
-        CPU cpu = cpus.get(roundRobinCounter.getAndIncrement() % cpus.size());
+        backlog.add(batch);
+    }
 
-        cpu.submitDataBatch(batch);
+    public Optional<DataBatch> getNextDataBatch() {
+        return backlog.peek() != null ? Optional.of(backlog.remove()) : Optional.empty();
     }
 
     public Optional<Collection<DataBatch>> popProcessedBatches(GPU gpu) {
@@ -106,6 +107,11 @@ public class Cluster {
     }
 
     public void notifyBatchProcessed(DataBatch batch) {
+        // wait for submitter to be registered
+        while (!batchSubmitters.containsKey(batch)) {
+            // TODO: maybe add timeout?
+        }
+
         GPU submitter = batchSubmitters.remove(batch);
 
         processedBatches.putIfAbsent(submitter, new ConcurrentLinkedDeque<>());
