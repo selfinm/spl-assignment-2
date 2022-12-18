@@ -8,9 +8,10 @@ import java.util.ArrayList;
 
 /**
  * Passive object representing information on a conference.
- * Add fields and methods to this class as you see fit (including public methods and constructors).
+ * Add fields and methods to this class as you see fit (including public methods
+ * and constructors).
  */
-public class ConfrenceInformation {
+public class ConferenceInformation {
     @SerializedName("name")
     @Expose
     private String name;
@@ -23,13 +24,13 @@ public class ConfrenceInformation {
     private ConferenceService myConferenceService;
     private ArrayList<Model> goodModels;
 
-    public ConfrenceInformation(String name, int publishDate) {
+    public ConferenceInformation(String name, int publishDate) {
         this.name = name;
         this.publishDate = publishDate;
     }
 
-    public void init(String name){
-        myConferenceService = new ConferenceService(name + " ConfrenceService");
+    public void init(String name) {
+        myConferenceService = new ConferenceService(name + " ConferenceService");
         Thread t = new Thread(myConferenceService);
         conferenceServiceThread = t;
         t.start();
@@ -51,7 +52,7 @@ public class ConfrenceInformation {
         return goodModels.size();
     }
 
-    public void clearPublishedModels(){
+    public void clearPublishedModels() {
         goodModels.clear();
     }
 }
