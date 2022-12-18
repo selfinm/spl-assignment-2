@@ -3,8 +3,6 @@ package bgu.spl.mics.application.services;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import javax.print.attribute.standard.MediaSize.NA;
-
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;

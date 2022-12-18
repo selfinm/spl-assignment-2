@@ -2,15 +2,11 @@ package bgu.spl.mics.application.objects;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
-
-import bgu.spl.mics.Future;
 
 /**
  * Passive object representing the cluster.
