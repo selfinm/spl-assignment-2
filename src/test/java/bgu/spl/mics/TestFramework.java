@@ -120,6 +120,12 @@ public class TestFramework {
             }
         }
 
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         Long start = System.currentTimeMillis();
 
         Future<String> f1 = m.sendEvent(new ExampleEvent("first event"));
