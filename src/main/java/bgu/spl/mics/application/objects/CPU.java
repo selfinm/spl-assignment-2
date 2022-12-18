@@ -2,6 +2,7 @@ package bgu.spl.mics.application.objects;
 
 import java.util.Collection;
 import java.util.Map;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -14,7 +15,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CPU {
 
     private int cores;
-    private Collection<DataBatch> data;
+    // TODO: is it ok to make data a Queue?
+    // if not, make it a collection and just don't use it
+    private Queue<DataBatch> data;
     private Cluster cluster;
 
     private Map<DataBatch, Integer> batchesTicksLeft;
@@ -37,22 +40,20 @@ public class CPU {
     }
 
     public void tick() {
-        // TODO do cpus process all batches in parallel, or one at a time?
-        // if one at a time then just replace this for with .peek (and a guard)
-        for (DataBatch batch : data) {
-            int ticksLeft = batchesTicksLeft.getOrDefault(batch, calcBatchTicks(batch.getData().getType()));
-            batchesTicksLeft.put(batch, ticksLeft - 1);
-            // TODO: do we count ticks by batch or by tick?
-            // lets say in one tick CPU processed 5 batches
-            // is that 1 tick or 5 ticks for the cluster cpuTickUsed?
-            cluster.cpuTickUsed();
+        DataBatch batch = data.peek();
+        if (batch == null) {
+            return;
+        }
 
-            if (batchesTicksLeft.get(batch) == 0) {
-                data.remove(batch);
-                batchesTicksLeft.remove(batch);
+        int ticksLeft = batchesTicksLeft.getOrDefault(batch, calcBatchTicks(batch.getData().getType()));
+        batchesTicksLeft.put(batch, ticksLeft - 1);
+        cluster.cpuTickUsed();
 
-                cluster.notifyBatchProcessed(batch);
-            }
+        if (batchesTicksLeft.get(batch) == 0) {
+            data.remove(batch);
+            batchesTicksLeft.remove(batch);
+
+            cluster.notifyBatchProcessed(batch);
         }
     }
 
