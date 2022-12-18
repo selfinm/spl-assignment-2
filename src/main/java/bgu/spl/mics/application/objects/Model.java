@@ -33,7 +33,7 @@ public class Model {
 
     private Data data;
     private Status status;
-    private Results results;
+    protected Results results;
 
     public Model(String name, Data.Type type, int size) {
         this.name = name;
