@@ -1,15 +1,12 @@
 package bgu.spl.mics.application.services;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.ArrayDeque;
 import java.util.Queue;
 
-import javax.xml.crypto.Data;
-
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrainModelEvent;
-import bgu.spl.mics.application.objects.DataBatch;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
 
@@ -34,21 +31,27 @@ public class GPUService extends MicroService {
         super(name);
 
         this.gpu = gpu;
+
+        backlog = new ArrayDeque<>();
+        currentEvent = null;
     }
 
     private void handleTrainModelEvent(TrainModelEvent event) {
         backlog.add(event);
     }
 
-    private void handleTickBroadcast(TickBroadcast _t) {
+    private void handleTickBroadcast(TickBroadcast __) {
+        // get current event or next one from backlog
         currentEvent = currentEvent == null ? backlog.poll() : currentEvent;
+
+        // nothing to do
         if (currentEvent == null) {
             return;
         }
 
         // train next batch
         Model model = currentEvent.getModel();
-        this.gpu.trainBatch(model);
+        gpu.trainBatch(model);
 
         if (model.trained()) {
             complete(currentEvent, model);
@@ -61,5 +64,6 @@ public class GPUService extends MicroService {
     protected void initialize() {
         subscribeEvent(TrainModelEvent.class, this::handleTrainModelEvent);
         subscribeBroadcast(TickBroadcast.class, this::handleTickBroadcast);
+        subscribeBroadcast(CloseAllBroadcast.class, __ -> terminate());
     }
 }
