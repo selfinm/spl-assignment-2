@@ -42,13 +42,6 @@ public class CPU {
         dataBatch = Optional.empty();
     }
 
-    public void submitDataBatch(DataBatch batch) {
-        data.add(batch);
-        // TODO maybe we need to submit calcBatchTicks-1 here?
-        // maybe this counts as a "tick"?
-        batchesTicksLeft.putIfAbsent(batch, calcBatchTicks(batch.getData().getType()));
-    }
-
     public void tick() {
         // get next batch from cluster if needed
         dataBatch = dataBatch.isPresent() ? dataBatch : cluster.getNextDataBatch();
@@ -65,7 +58,6 @@ public class CPU {
         cluster.cpuTickUsed();
 
         if (batchesTicksLeft.get(batch) == 0) {
-            data.remove(batch);
             batchesTicksLeft.remove(batch);
 
             cluster.notifyBatchProcessed(batch);
