@@ -45,7 +45,7 @@ public class CPU {
                 data.remove(batch);
                 batchesTicksLeft.remove(batch);
 
-                cluster.notifyBatchProcessed(batch);
+                cluster.notifyBatchProcessed(batch, calcBatchTicks(batch.getData().getType()));
             }
         }
     }
