@@ -44,6 +44,10 @@ public class Cluster {
         return instance;
     }
 
+    public static void shutdown() {
+        instance = null;
+    }
+
     private Cluster() {
         gpus = new ArrayList<>();
         cpus = new ArrayList<>();
@@ -88,11 +92,14 @@ public class Cluster {
         return Optional.of(gpuProcessedBatches);
     }
 
-    public void notifyBatchProcessed(DataBatch batch) {
+    public void notifyBatchProcessed(DataBatch batch, int timeUnitsUsed) {
         GPU submitter = batchSubmitters.remove(batch);
 
         processedBatches.putIfAbsent(submitter, new ConcurrentLinkedDeque<>());
         processedBatches.get(submitter).add(batch);
+
+        cpuDataBatchesProcessed++;
+        cpuTimeUnitsUsed += timeUnitsUsed;
     }
 
 }
