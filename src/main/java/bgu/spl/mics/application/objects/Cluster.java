@@ -1,7 +1,14 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 
 import bgu.spl.mics.Future;
 
@@ -28,6 +35,9 @@ public class Cluster {
 
     private Integer roundRobinCounter;
 
+    private Map<GPU, Collection<DataBatch>> processedBatches;
+    private Map<DataBatch, GPU> batchSubmitters;
+
     /**
      * Retrieves the single instance of this class.
      */
@@ -39,15 +49,18 @@ public class Cluster {
     }
 
     private Cluster() {
-        gpus = List.of();
-        cpus = List.of();
+        gpus = new ArrayList<>();
+        cpus = new ArrayList<>();
 
-        modelsTrained = List.of();
+        modelsTrained = new ArrayList<>();
         cpuDataBatchesProcessed = 0;
         cpuTimeUnitsUsed = 0;
         gpuTimeUnitsUsed = 0;
 
         roundRobinCounter = 0;
+
+        processedBatches = new ConcurrentHashMap<>();
+        batchSubmitters = new ConcurrentHashMap<>();
     }
 
     public void addGpu(GPU gpu) {
@@ -58,11 +71,32 @@ public class Cluster {
         cpus.add(cpu);
     }
 
-    public Future<Integer> processDataBatch(DataBatch batch) {
+    public void submitDataBatch(DataBatch batch, GPU submitter) {
+        batchSubmitters.put(batch, submitter);
         CPU cpu = cpus.get(roundRobinCounter % cpus.size());
+        roundRobinCounter = (roundRobinCounter + 1) % cpus.size();
 
-        // tell cpu to process batch
-        return cpu.processDataBatch(batch);
+        cpu.submitDataBatch(batch);
+    }
+
+    public Optional<Collection<DataBatch>> popProcessedBatches(GPU gpu) {
+        Collection<DataBatch> gpuProcessedBatches = processedBatches.remove(gpu);
+
+        if (gpuProcessedBatches == null)
+            return Optional.empty();
+
+        for (DataBatch batch : gpuProcessedBatches) {
+            batchSubmitters.remove(batch);
+        }
+
+        return Optional.of(gpuProcessedBatches);
+    }
+
+    public void notifyBatchProcessed(DataBatch batch) {
+        GPU submitter = batchSubmitters.remove(batch);
+
+        processedBatches.putIfAbsent(submitter, new ConcurrentLinkedDeque<>());
+        processedBatches.get(submitter).add(batch);
     }
 
 }

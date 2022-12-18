@@ -4,6 +4,7 @@ import java.util.concurrent.TimeUnit;
 
 import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import bgu.spl.mics.example.messages.ExampleBroadcast;
@@ -12,12 +13,9 @@ import bgu.spl.mics.example.services.ExampleEventHandlerService;
 
 public class TestMessageBusImpl {
 
-    @After
-    public void after() {
-        MessageBusImpl m = MessageBusImpl.getInstance();
-        m.messageSubscribers.clear();
-        m.roundRobinCounters.clear();
-        m.serviceMessages.clear();
+    @Before
+    public void before() {
+        MessageBusImpl.restart();
     }
 
     @Test

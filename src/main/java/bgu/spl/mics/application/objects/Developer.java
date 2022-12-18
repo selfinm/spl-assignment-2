@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class Developer {
 
-    enum Position {
+    public enum Position {
         Intern, Junior, Senior
     }
 

@@ -1,25 +1,66 @@
 package bgu.spl.mics;
 
+import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
+import bgu.spl.mics.example.messages.ExampleBroadcast;
 import bgu.spl.mics.example.messages.ExampleEvent;
 
 public class TestFramework {
 
-    @After
-    public void after() {
-        MessageBusImpl m = MessageBusImpl.getInstance();
-        m.messageSubscribers.clear();
-        m.roundRobinCounters.clear();
-        m.serviceMessages.clear();
+    @Before
+    public void before() {
+        MessageBusImpl.restart();
     }
 
     @Test
-    public void testSynchronization() {
+    public void testBroadcast() {
+        MessageBusImpl m = MessageBusImpl.getInstance();
+
+        ConcurrentLinkedQueue<String> q = new ConcurrentLinkedQueue<>();
+
+        MicroService ms = new MicroService("b-1") {
+
+            @Override
+            protected void initialize() {
+                subscribeBroadcast(ExampleBroadcast.class, b -> {
+                    System.out.println("called");
+                    q.add(b.getSenderId());
+                    terminate();
+                });
+            }
+
+        };
+
+        Thread thread = new Thread(ms);
+        thread.start();
+
+        while (!m.isRegistered(ms)) {
+            try {
+                Thread.sleep(10);
+            } catch (InterruptedException e) {
+                return;
+            }
+        }
+
+        m.sendBroadcast(new ExampleBroadcast("hello"));
+
+        try {
+            Thread.sleep(100);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return;
+        }
+
+        Assert.assertEquals("hello", q.poll());
+    }
+
+    @Test
+    public void testEvent() {
         MessageBusImpl m = MessageBusImpl.getInstance();
 
         Thread ms1 = new Thread(new MicroService("slp-1") {
@@ -88,8 +129,11 @@ public class TestFramework {
 
         Assert.assertTrue(duration < 100);
 
-        Assert.assertEquals(f1.get(1001, TimeUnit.MILLISECONDS), "first event");
-        Assert.assertEquals(f2.get(1001, TimeUnit.MILLISECONDS), "second event");
+        Assert.assertEquals("first event", f1.get(1500, TimeUnit.MILLISECONDS));
+        Assert.assertEquals("second event", f2.get(1500, TimeUnit.MILLISECONDS));
+
+        int maxLag = 100;
+        Assert.assertTrue(System.currentTimeMillis() - start <= 1000 + maxLag);
 
         try {
             ms1.join();

@@ -1,12 +1,13 @@
 package bgu.spl.mics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
-
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -17,7 +18,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
  */
 public class MessageBusImpl implements MessageBus {
 
-    Map<String, Queue<Message>> serviceMessages;
+    public Map<String, Queue<Message>> serviceMessages;
     Map<Class<? extends Message>, List<String>> messageSubscribers;
     Map<Class<? extends Message>, Integer> roundRobinCounters;
     Map<Event<?>, Future<?>> eventFutures;
@@ -25,10 +26,10 @@ public class MessageBusImpl implements MessageBus {
     private static MessageBusImpl instance = null;
 
     private MessageBusImpl() {
-        serviceMessages = Collections.synchronizedMap(new HashMap<>());
-        messageSubscribers = Collections.synchronizedMap(new HashMap<>());
-        roundRobinCounters = Collections.synchronizedMap(new HashMap<>());
-        eventFutures = Collections.synchronizedMap(new HashMap<>());
+        serviceMessages = new ConcurrentHashMap<>();
+        messageSubscribers = new ConcurrentHashMap<>();
+        roundRobinCounters = new ConcurrentHashMap<>();
+        eventFutures = new ConcurrentHashMap<>();
     }
 
     public static MessageBusImpl getInstance() {
@@ -36,6 +37,10 @@ public class MessageBusImpl implements MessageBus {
             instance = new MessageBusImpl();
 
         return instance;
+    }
+
+    public static void restart() {
+        instance = new MessageBusImpl();
     }
 
     @Override
@@ -86,7 +91,7 @@ public class MessageBusImpl implements MessageBus {
 
         String subscriber = subscribers.get(eventCounter % subscribers.size());
         eventCounter++;
-        roundRobinCounters.put(e.getClass(), eventCounter);
+        roundRobinCounters.put(e.getClass(), eventCounter % subscribers.size());
 
         Future<T> future = new Future<>();
         eventFutures.put(e, future);
@@ -126,11 +131,21 @@ public class MessageBusImpl implements MessageBus {
         }
 
         while (true) {
-            Message msg = serviceMessages.get(m.getName()).poll();
+            Queue<Message> queue = serviceMessages.get(m.getName());
+            Message msg = queue.poll();
             if (msg != null) {
                 return msg;
             }
         }
     }
 
+    public boolean isRegistered(MicroService... ms) {
+        for (MicroService m : ms) {
+            if (!serviceMessages.containsKey(m.getName())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }
