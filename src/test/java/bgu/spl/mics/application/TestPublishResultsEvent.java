@@ -1,9 +1,6 @@
 package bgu.spl.mics.application;
 
 import java.util.Collection;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,17 +12,12 @@ import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
 import bgu.spl.mics.application.messages.PublishResultsEvent;
-import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.ConferenceInformation;
 import bgu.spl.mics.application.objects.Data;
-import bgu.spl.mics.application.objects.Developer;
-import bgu.spl.mics.application.objects.Developer.Status;
-import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
 import bgu.spl.mics.application.objects.Model.Results;
 import bgu.spl.mics.application.services.ConferenceService;
-import bgu.spl.mics.application.services.GPUService;
 
 public class TestPublishResultsEvent {
     MessageBusImpl m;
