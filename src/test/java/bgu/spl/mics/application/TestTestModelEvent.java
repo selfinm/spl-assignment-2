@@ -1,5 +1,7 @@
 package bgu.spl.mics.application;
 
+import java.util.List;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -7,16 +9,20 @@ import org.junit.Test;
 import bgu.spl.mics.Future;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.messages.CloseAllBroadcast;
+import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrainModelEvent;
 import bgu.spl.mics.application.objects.CPU;
 import bgu.spl.mics.application.objects.Data;
+import bgu.spl.mics.application.objects.Developer;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
+import bgu.spl.mics.application.objects.Developer.Status;
+import bgu.spl.mics.application.objects.Model.Results;
 import bgu.spl.mics.application.services.CPUService;
 import bgu.spl.mics.application.services.GPUService;
 
-public class TestTrainModelEvent {
+public class TestTestModelEvent {
 
     MessageBusImpl m;
 
@@ -29,29 +35,20 @@ public class TestTrainModelEvent {
 
     @Test
     public void testTrainModelEvent() {
-        int cpu1Cores = 1;
-        int cpu2Cores = 2;
+        int cpuCores = 1;
         GPU.Type gpuType = GPU.Type.GTX1080;
         int modelSize = 1500;
 
         // build micro services
         GPU gpu = new GPU(gpuType);
         GPUService gpuMs = new GPUService("gs-1", gpu);
-        CPU cpu1 = new CPU(cpu1Cores);
-        CPUService cpu1Ms = new CPUService("cs-1", cpu1);
-        CPU cpu2 = new CPU(cpu2Cores);
-        CPUService cpu2Ms = new CPUService("cs-2", cpu2);
 
         // start microservices
         Thread gpuMsThread = new Thread(gpuMs);
         gpuMsThread.start();
-        Thread cpu1MsThread = new Thread(cpu1Ms);
-        cpu1MsThread.start();
-        Thread cpu2MsThread = new Thread(cpu2Ms);
-        cpu2MsThread.start();
 
         // wait for services to start
-        while (!m.isRegistered(gpuMs, cpu1Ms, cpu2Ms)) {
+        while (!m.isRegistered(gpuMs)) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -60,11 +57,12 @@ public class TestTrainModelEvent {
         }
 
         Model model = new Model("test-model", Data.Type.Tabular, modelSize);
+        Developer developer = new Developer("test-dev", "test", Status.Intern, List.of(model));
 
-        Future<Model> trainedModel = m.sendEvent(new TrainModelEvent(model));
+        Future<Model> testedModel = m.sendEvent(new TestModelEvent(model, developer));
 
         int totalTicks = 0;
-        while (!trainedModel.isDone()) {
+        while (!testedModel.isDone()) {
             m.sendBroadcast(new TickBroadcast());
             totalTicks++;
 
@@ -93,9 +91,11 @@ public class TestTrainModelEvent {
         int maxGpuBeforeCpuTicks = 2;
 
         System.out.println("FINAL TICK COUNT: " + totalTicks);
-        Assert.assertTrue(36 <= totalTicks && totalTicks <= 36 + maxCpuBeforeGpuTicks + maxGpuBeforeCpuTicks);
+        // Assert.assertTrue(36 <= totalTicks && totalTicks <= 36 + maxCpuBeforeGpuTicks
+        // + maxGpuBeforeCpuTicks);
 
-        Assert.assertEquals(model.getName(), trainedModel.get().getName());
+        Assert.assertTrue(testedModel.get().getResults() != null);
+        Assert.assertNotEquals(Results.None, testedModel.get().getResults());
 
     }
 

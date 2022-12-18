@@ -78,7 +78,9 @@ public class Cluster {
     }
 
     public Optional<DataBatch> getNextDataBatch() {
-        return backlog.peek() != null ? Optional.of(backlog.remove()) : Optional.empty();
+        DataBatch nextDataBatch = backlog.poll();
+
+        return nextDataBatch != null ? Optional.of(nextDataBatch) : Optional.empty();
     }
 
     public Optional<Collection<DataBatch>> popProcessedBatches(GPU gpu) {

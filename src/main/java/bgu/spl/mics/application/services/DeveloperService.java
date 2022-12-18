@@ -35,7 +35,7 @@ public class DeveloperService extends MicroService {
 
         for (Model model : developer.getModels()) {
             Model trainedModel = sendEvent(new TrainModelEvent(model)).get();
-            Model testedModel = sendEvent(new TestModelEvent(trainedModel)).get();
+            Model testedModel = sendEvent(new TestModelEvent(trainedModel, developer)).get();
 
             if (testedModel.getResults() == Results.Good) {
                 sendEvent(new PublishResultsEvent(testedModel)).get();

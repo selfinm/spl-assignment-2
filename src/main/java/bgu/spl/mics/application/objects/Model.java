@@ -30,10 +30,10 @@ public class Model {
     @SerializedName("size")
     @Expose
     private int size;
-    private Developer developer;
 
     private Status status = Status.PreTrained;
     private Results results = Results.None;
+
     private Data data;
 
     public Model(String name, Data.Type type, int size) {
@@ -42,6 +42,11 @@ public class Model {
         this.size = size;
 
         data = new Data(type, size);
+        results = Results.None;
+    }
+
+    public void setResults(Results results) {
+        this.results = results;
     }
 
     public String getName() {

@@ -12,7 +12,7 @@ import java.util.List;
  */
 public class Developer {
 
-    public enum Position {
+    public enum Status {
         Intern, Junior, Senior
     }
 
@@ -24,22 +24,27 @@ public class Developer {
     private String department;
     @SerializedName("status")
     @Expose
-    private Position status;
+    private Status status;
+
     @SerializedName("publications")
     @Expose
     private Integer publications;
+
     @SerializedName("papersRead")
     @Expose
     private int papersRead;
-
     private List<Model> models;
 
-    public Developer(String name, String department, Position status, List<Model> models) {
+    public Developer(String name, String department, Status status, List<Model> models) {
         this.name = name;
         this.department = department;
         this.status = status;
 
         this.models = models;
+    }
+
+    public Status getStatus() {
+        return status;
     }
 
     public List<Model> getModels() {
