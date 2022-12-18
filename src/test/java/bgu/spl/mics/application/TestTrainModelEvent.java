@@ -68,11 +68,8 @@ public class TestTrainModelEvent {
 
         int totalTicks = 0;
         while (!trainedModel.isDone()) {
-            System.out.println("-------------------------");
-            System.out.println("tick: " + totalTicks);
             m.sendBroadcast(new TickBroadcast());
             totalTicks++;
-            System.out.println("-------------------------");
 
             try {
                 Thread.sleep(10);
@@ -80,6 +77,8 @@ public class TestTrainModelEvent {
                 e.printStackTrace();
             }
         }
+
+        m.sendBroadcast(new CloseAllBroadcast());
 
         // cpu 1 has 1 core so tacks 32 ticks
         // cpu 2 finishes before cpu 1
@@ -99,7 +98,7 @@ public class TestTrainModelEvent {
         System.out.println("FINAL TICK COUNT: " + totalTicks);
         Assert.assertTrue(36 <= totalTicks && totalTicks <= 36 + maxCpuBeforeGpuTicks + maxGpuBeforeCpuTicks);
 
-        m.sendBroadcast(new CloseAllBroadcast());
+        Assert.assertEquals(model.getName(), trainedModel.get().getName());
 
     }
 
