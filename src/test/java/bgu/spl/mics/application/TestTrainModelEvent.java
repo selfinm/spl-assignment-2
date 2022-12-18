@@ -22,7 +22,7 @@ public class TestTrainModelEvent {
 
     @Before
     public void before() {
-        MessageBusImpl.restart();
+        MessageBusImpl.shutdown();
 
         m = MessageBusImpl.getInstance();
     }

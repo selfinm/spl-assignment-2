@@ -12,7 +12,7 @@ public class TestMessageBusImpl {
 
     @Before
     public void before() {
-        MessageBusImpl.restart();
+        MessageBusImpl.shutdown();
     }
 
     @Test

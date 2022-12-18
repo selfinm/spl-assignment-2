@@ -37,8 +37,8 @@ public class MessageBusImpl implements MessageBus {
         return instance;
     }
 
-    public static void restart() {
-        instance = new MessageBusImpl();
+    public static void shutdown() {
+        instance = null;
     }
 
     @Override
