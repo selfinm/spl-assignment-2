@@ -40,12 +40,16 @@ public class CPU {
         for (DataBatch batch : data) {
             int ticksLeft = batchesTicksLeft.getOrDefault(batch, calcBatchTicks(batch.getData().getType()));
             batchesTicksLeft.put(batch, ticksLeft - 1);
+            // TODO: do we count ticks by batch or by tick?
+            // lets say in one tick CPU processed 5 batches
+            // is that 1 tick or 5 ticks for the cluster cpuTickUsed?
+            cluster.cpuTickUsed();
 
             if (batchesTicksLeft.get(batch) == 0) {
                 data.remove(batch);
                 batchesTicksLeft.remove(batch);
 
-                cluster.notifyBatchProcessed(batch, calcBatchTicks(batch.getData().getType()));
+                cluster.notifyBatchProcessed(batch);
             }
         }
     }

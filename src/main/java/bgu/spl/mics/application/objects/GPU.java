@@ -102,6 +102,11 @@ public class GPU {
         // tick current batches in training
         for (DataBatch batchInTraining : batchesInTraining) {
             int ticksLeft = batchesTicksLeft.get(batchInTraining) - 1;
+            // TODO: do we count ticks by batch or by tick?
+            // lets say in one tick CPU processed 5 batches
+            // is that 1 tick or 5 ticks for the cluster cpuTickUsed?
+            cluster.gpuTickUsed();
+
             if (ticksLeft == 0) {
                 batchesInTraining.remove();
                 batchesTicksLeft.remove(batchInTraining);

@@ -7,6 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Passive object representing the cluster.
@@ -24,12 +26,12 @@ public class Cluster {
     private List<CPU> cpus;
 
     // statistics
-    private Collection<String> modelsTrained;
-    private Integer cpuDataBatchesProcessed;
-    private Integer cpuTimeUnitsUsed;
-    private Integer gpuTimeUnitsUsed;
+    private ConcurrentLinkedQueue<String> modelsTrained;
+    private AtomicInteger cpuDataBatchesProcessed;
+    private AtomicInteger cpuTimeUnitsUsed;
+    private AtomicInteger gpuTimeUnitsUsed;
 
-    private Integer roundRobinCounter;
+    private AtomicInteger roundRobinCounter;
 
     private Map<GPU, Collection<DataBatch>> processedBatches;
     private Map<DataBatch, GPU> batchSubmitters;
@@ -52,29 +54,28 @@ public class Cluster {
         gpus = new ArrayList<>();
         cpus = new ArrayList<>();
 
-        modelsTrained = new ArrayList<>();
-        cpuDataBatchesProcessed = 0;
-        cpuTimeUnitsUsed = 0;
-        gpuTimeUnitsUsed = 0;
+        modelsTrained = new ConcurrentLinkedQueue<>();
+        cpuDataBatchesProcessed = new AtomicInteger(0);
+        cpuTimeUnitsUsed = new AtomicInteger(0);
+        gpuTimeUnitsUsed = new AtomicInteger(0);
 
-        roundRobinCounter = 0;
+        roundRobinCounter = new AtomicInteger(0);
 
         processedBatches = new ConcurrentHashMap<>();
         batchSubmitters = new ConcurrentHashMap<>();
     }
 
-    public void addGpu(GPU gpu) {
+    public synchronized void addGpu(GPU gpu) {
         gpus.add(gpu);
     }
 
-    public void addCpu(CPU cpu) {
+    public synchronized void addCpu(CPU cpu) {
         cpus.add(cpu);
     }
 
     public void submitDataBatch(DataBatch batch, GPU submitter) {
         batchSubmitters.put(batch, submitter);
-        CPU cpu = cpus.get(roundRobinCounter % cpus.size());
-        roundRobinCounter = (roundRobinCounter + 1) % cpus.size();
+        CPU cpu = cpus.get(roundRobinCounter.getAndIncrement() % cpus.size());
 
         cpu.submitDataBatch(batch);
     }
@@ -92,14 +93,25 @@ public class Cluster {
         return Optional.of(gpuProcessedBatches);
     }
 
-    public void notifyBatchProcessed(DataBatch batch, int timeUnitsUsed) {
+    public void cpuTickUsed() {
+        cpuTimeUnitsUsed.incrementAndGet();
+    }
+
+    public void gpuTickUsed() {
+        gpuTimeUnitsUsed.incrementAndGet();
+    }
+
+    public void modelTrained(String modelName) {
+        modelsTrained.add(modelName);
+    }
+
+    public void notifyBatchProcessed(DataBatch batch) {
         GPU submitter = batchSubmitters.remove(batch);
 
         processedBatches.putIfAbsent(submitter, new ConcurrentLinkedDeque<>());
         processedBatches.get(submitter).add(batch);
 
-        cpuDataBatchesProcessed++;
-        cpuTimeUnitsUsed += timeUnitsUsed;
+        cpuDataBatchesProcessed.incrementAndGet();
     }
 
 }
