@@ -71,7 +71,11 @@ public class MessageBusImpl implements MessageBus {
 
     @Override
     public void sendBroadcast(Broadcast b) {
-        for (String microservice : messageSubscribers.get(b.getClass())) {
+        List<String> subscribers = messageSubscribers.get(b.getClass());
+        if (subscribers == null)
+            return;
+
+        for (String microservice : subscribers) {
             serviceMessages.get(microservice).add(b);
         }
     }
