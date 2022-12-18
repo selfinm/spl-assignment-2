@@ -22,14 +22,16 @@ public class Model {
     @SerializedName("name")
     @Expose
     private String name;
+
     @SerializedName("type")
     @Expose
     private Data.Type type;
+
     @SerializedName("size")
     @Expose
     private int size;
-
     private Developer developer;
+
     private Status status = Status.PreTrained;
     private Results results = Results.None;
     private Data data;
@@ -40,6 +42,10 @@ public class Model {
         this.size = size;
 
         data = new Data(type, size);
+    }
+
+    public String getName() {
+        return name;
     }
 
     public void setStatus(Status status) {
