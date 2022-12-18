@@ -37,6 +37,8 @@ public class CPU {
     }
 
     public void tick() {
+        // TODO do cpus process all batches in parallel, or one at a time?
+        // if one at a time then just replace this for with .peek (and a guard)
         for (DataBatch batch : data) {
             int ticksLeft = batchesTicksLeft.getOrDefault(batch, calcBatchTicks(batch.getData().getType()));
             batchesTicksLeft.put(batch, ticksLeft - 1);
