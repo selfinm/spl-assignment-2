@@ -1,6 +1,8 @@
 package bgu.spl.mics.application;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import org.junit.Assert;
@@ -41,12 +43,25 @@ public class TestPublishResultsEvent {
         ConferenceInformation confInf = new ConferenceInformation("conf-1-inf", 10);
         ConferenceService confMS = new ConferenceService("conf-1", confInf);
 
+        Future<Collection<String>> publishedModels = new Future<>();
+
+        MicroService testerMs = new MicroService("tester") {
+            @Override
+            protected void initialize() {
+                subscribeBroadcast(PublishConferenceBroadcast.class,
+                        msg -> publishedModels.resolve(msg.getModelNames()));
+            }
+        };
+
+        Thread testerMsThread = new Thread(testerMs);
+        testerMsThread.start();
+
         // start microservices
         Thread confMsThread = new Thread(confMS);
         confMsThread.start();
 
         // wait for services to start
-        while (!m.isRegistered(confMS)) {
+        while (!m.isRegistered(confMS, testerMs)) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -67,7 +82,7 @@ public class TestPublishResultsEvent {
         Assert.assertTrue(publishedModel.get() != null);
 
         int totalTicks = 0;
-        for (int i = 0; i < confInf.getDate(); i++) {
+        while (!publishedModels.isDone()) {
             m.sendBroadcast(new TickBroadcast());
             totalTicks++;
 
@@ -77,13 +92,11 @@ public class TestPublishResultsEvent {
                 e.printStackTrace();
             }
         }
-
-        // TODO: test results using a microservice
+        m.sendBroadcast(new CloseAllBroadcast());
 
         System.out.println("FINAL TICK COUNT: " + totalTicks);
         Assert.assertEquals(confInf.getDate(), totalTicks);
-
-        m.sendBroadcast(new CloseAllBroadcast());
+        Assert.assertTrue(publishedModels.get().contains(model.getName()));
     }
 
 }
