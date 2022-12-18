@@ -100,6 +100,7 @@ public class GPU {
         }
 
         // tick current batches in training
+        // TODO: do GPUs train batches in parallel or not?
         for (DataBatch batchInTraining : batchesInTraining) {
             int ticksLeft = batchesTicksLeft.get(batchInTraining) - 1;
             // TODO: do we count ticks by batch or by tick?
