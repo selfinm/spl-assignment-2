@@ -1,10 +1,7 @@
 package bgu.spl.mics.application.objects;
 
-import bgu.spl.mics.application.services.ConferenceService;
 import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
-
-import java.util.ArrayList;
 
 /**
  * Passive object representing information on a conference.
@@ -18,41 +15,18 @@ public class ConferenceInformation {
 
     @SerializedName("date")
     @Expose
-    private int publishDate;
-    private Thread conferenceServiceThread;
+    private int date;
 
-    private ConferenceService myConferenceService;
-    private ArrayList<Model> goodModels;
-
-    public ConferenceInformation(String name, int publishDate) {
+    public ConferenceInformation(String name, int date) {
         this.name = name;
-        this.publishDate = publishDate;
-    }
-
-    public void init(String name) {
-        myConferenceService = new ConferenceService(name + " ConferenceService");
-        Thread t = new Thread(myConferenceService);
-        conferenceServiceThread = t;
-        t.start();
-    }
-
-    public Thread getConferenceServiceThread() {
-        return conferenceServiceThread;
+        this.date = date;
     }
 
     public String getName() {
         return name;
     }
 
-    public int getPublishDate() {
-        return publishDate;
-    }
-
-    public int getGoodModelsSize() {
-        return goodModels.size();
-    }
-
-    public void clearPublishedModels() {
-        goodModels.clear();
+    public int getDate() {
+        return date;
     }
 }

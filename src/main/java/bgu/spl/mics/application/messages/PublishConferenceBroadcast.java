@@ -1,19 +1,18 @@
 package bgu.spl.mics.application.messages;
 
-import bgu.spl.mics.Broadcast;
-import bgu.spl.mics.application.objects.Developer;
+import java.util.Collection;
 
-import java.util.HashMap;
+import bgu.spl.mics.Broadcast;
 
 public class PublishConferenceBroadcast implements Broadcast {
 
-    private final HashMap<Developer, Integer> publishing;
+    private Collection<String> modelNames;
 
-    public PublishConferenceBroadcast(HashMap<Developer, Integer> publishing) {
-        this.publishing = publishing;
+    public PublishConferenceBroadcast(Collection<String> modelNames) {
+        this.modelNames = modelNames;
     }
 
-    public HashMap<Developer, Integer> getPublishing() {
-        return publishing;
+    public Collection<String> getModelNames() {
+        return modelNames;
     }
 }

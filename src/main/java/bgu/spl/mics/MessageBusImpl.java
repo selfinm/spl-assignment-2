@@ -24,6 +24,9 @@ public class MessageBusImpl implements MessageBus {
     private static MessageBusImpl instance = null;
 
     private MessageBusImpl() {
+        // this needs to be fixed
+        // TODO: Each Micro-Service contains a name given to it in construction time
+        // (the name is not guaranteed to be unique).
         serviceMessages = new ConcurrentHashMap<>();
         messageSubscribers = new ConcurrentHashMap<>();
         roundRobinCounters = new ConcurrentHashMap<>();
