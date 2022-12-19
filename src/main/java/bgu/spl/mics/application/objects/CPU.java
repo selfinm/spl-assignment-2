@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class CPU {
 
     private int cores;
+
     /**
      * From the project spec:
      * When a CPU finishes processing a batch, it sends the Cluster the processed
@@ -22,14 +23,15 @@ public class CPU {
      * </p>
      * So why is data a collection and not just a DataBatch?
      */
-    private Collection<DataBatch> data;
-    private Cluster cluster;
+    private transient Collection<DataBatch> data;
 
-    private Map<DataBatch, Integer> batchesTicksLeft;
+    private transient Cluster cluster;
+    private transient Map<DataBatch, Integer> batchesTicksLeft;
+
     /**
      * Using this instead of data, since we don't need a collection
      */
-    private Optional<DataBatch> dataBatch;
+    private transient Optional<DataBatch> dataBatch;
 
     public CPU(int cores) {
         this.cores = cores;
@@ -40,6 +42,10 @@ public class CPU {
 
         batchesTicksLeft = new ConcurrentHashMap<>();
         dataBatch = Optional.empty();
+    }
+
+    public int getCores() {
+        return cores;
     }
 
     public void tick() {

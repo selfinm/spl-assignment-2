@@ -7,6 +7,7 @@ import org.junit.Test;
 
 import com.google.gson.Gson;
 
+import bgu.spl.mics.application.objects.CPU;
 import bgu.spl.mics.application.objects.Data;
 import bgu.spl.mics.application.objects.Developer;
 import bgu.spl.mics.application.objects.GPU;
@@ -69,6 +70,17 @@ public class TestSerialization {
 
         Assert.assertEquals(expected.getType(), actual.getType());
         Assert.assertEquals(new Gson().toJson(actual), gpuString);
+    }
+
+    @Test
+    public void testCpu() {
+        String cpuString = "{\"cores\":1}";
+
+        CPU expected = new CPU(1);
+
+        CPU actual = new Gson().fromJson(cpuString, CPU.class);
+        Assert.assertEquals(actual.getCores(), expected.getCores());
+        Assert.assertEquals(new Gson().toJson(actual), cpuString);
     }
 
 }
