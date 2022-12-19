@@ -185,9 +185,9 @@ public class CRMSRunner {
 
         OutputJson outputJson = run(inputGson);
 
-        // 4. create output file
-        new Gson().toJson(outputJson, new FileWriter(output.toString()));
-
+        FileWriter writer = new FileWriter(output.toString());
+        new Gson().toJson(outputJson, writer);
+        writer.close();
     }
 
     private static InputJson readInputJson(Path inputFile) throws IOException {
