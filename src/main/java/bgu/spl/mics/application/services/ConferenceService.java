@@ -54,7 +54,6 @@ public class ConferenceService extends MicroService {
     }
 
     private void handlePublishResultsEvent(PublishResultsEvent event) {
-        System.out.println("got event: " + event.toString());
         Model model = event.getModel();
         if (model.getResults() != Results.Good) {
             // we don't need to crash, just refuse to publish
