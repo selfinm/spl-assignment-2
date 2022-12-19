@@ -88,71 +88,10 @@ public class TestSerialization {
     public void testInputJson() {
         String inputJsonString = "{\"developers\":[{\"name\":\"Dev-1\",\"department\":\"Dep-1\",\"status\":\"Intern\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"YOLO10\",\"data\":{\"type\":\"Images\",\"size\":200000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"ResNet9000\",\"data\":{\"type\":\"Images\",\"size\":200000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"LessEfficientNet\",\"data\":{\"type\":\"Images\",\"size\":20000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"DensestNet\",\"data\":{\"type\":\"Images\",\"size\":200000},\"status\":\"PreTrained\",\"results\":\"None\"}]},{\"name\":\"Dev-2\",\"department\":\"Dep-2\",\"status\":\"Junior\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"VIT\",\"data\":{\"type\":\"Images\",\"size\":100000000},\"status\":\"PreTrained\",\"results\":\"None\"}]},{\"name\":\"Dev-3\",\"department\":\"Dep-1\",\"status\":\"Senior\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"Bert\",\"data\":{\"type\":\"Text\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"GPT4\",\"data\":{\"type\":\"Text\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"GPT5\",\"data\":{\"type\":\"Text\",\"size\":200000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"GPT10\",\"data\":{\"type\":\"Text\",\"size\":50000},\"status\":\"PreTrained\",\"results\":\"None\"}]},{\"name\":\"Dev-4\",\"department\":\"Dep-2\",\"status\":\"Intern\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"Percepetron\",\"data\":{\"type\":\"Tabular\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"GNN\",\"data\":{\"type\":\"Tabular\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"MoreStyleGAN\",\"data\":{\"type\":\"Images\",\"size\":100000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"ConditionalGAN\",\"data\":{\"type\":\"Images\",\"size\":500000},\"status\":\"PreTrained\",\"results\":\"None\"}]},{\"name\":\"Dev-5\",\"department\":\"Dep-3\",\"status\":\"Junior\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"YOLO9000\",\"data\":{\"type\":\"Images\",\"size\":100000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"VIT2\",\"data\":{\"type\":\"Images\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"MuchMoreEfficientNet\",\"data\":{\"type\":\"Images\",\"size\":20000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"DenserNet\",\"data\":{\"type\":\"Images\",\"size\":100000},\"status\":\"PreTrained\",\"results\":\"None\"}]}],\"gpus\":[{\"type\":\"GTX1080\"},{\"type\":\"RTX3090\"},{\"type\":\"RTX2080\"},{\"type\":\"GTX1080\"}],\"cpus\":[{\"cores\":32},{\"cores\":32},{\"cores\":32},{\"cores\":16},{\"cores\":16},{\"cores\":16},{\"cores\":16}],\"conferenceInformations\":[{\"name\":\"ICML\",\"date\":20000},{\"name\":\"NeurIPS\",\"date\":25000},{\"name\":\"CVPR\",\"date\":30000},{\"name\":\"ECCV\",\"date\":40000},{\"name\":\"AISTATS\",\"date\":50000}],\"TickTime\":1,\"Duration\":55000}";
 
-        List<Developer> expectedDevelopers = List.of(
-                new Developer(
-                        "Dev-1",
-                        "Dep-1",
-                        Status.Intern,
-                        List.of(
-                                new Model("YOLO10", new Data(Data.Type.Images, 200000)),
-                                new Model("ResNet9000", new Data(Data.Type.Images, 200000)),
-                                new Model("LessEfficientNet", new Data(Data.Type.Images, 20000)),
-                                new Model("DensestNet", new Data(Data.Type.Images, 200000)))),
-                new Developer(
-                        "Dev-2",
-                        "Dep-2",
-                        Status.Junior,
-                        List.of(
-                                new Model("VIT", new Data(Data.Type.Images, 100000000)))),
-                new Developer(
-                        "Dev-3",
-                        "Dep-1",
-                        Status.Senior,
-                        List.of(
-                                new Model("Bert", new Data(Data.Type.Text, 1000000)),
-                                new Model("GPT4", new Data(Data.Type.Text, 1000000)),
-                                new Model("GPT5", new Data(Data.Type.Text, 200000)),
-                                new Model("GPT10", new Data(Data.Type.Text, 50000)))),
-                new Developer(
-                        "Dev-4",
-                        "Dep-2",
-                        Status.Intern,
-                        List.of(
-                                new Model("Percepetron", new Data(Data.Type.Tabular, 1000000)),
-                                new Model("GNN", new Data(Data.Type.Tabular, 1000000)),
-                                new Model("MoreStyleGAN", new Data(Data.Type.Images, 100000)),
-                                new Model("ConditionalGAN", new Data(Data.Type.Images, 500000)))),
-                new Developer(
-                        "Dev-5",
-                        "Dep-3",
-                        Status.Junior,
-                        List.of(
-                                new Model("YOLO9000", new Data(Data.Type.Images, 100000)),
-                                new Model("VIT2", new Data(Data.Type.Images, 1000000)),
-                                new Model("MuchMoreEfficientNet", new Data(Data.Type.Images, 20000)),
-                                new Model("DenserNet", new Data(Data.Type.Images, 100000)))));
-
-        List<GPU> expectedGpus = List.of(
-                new GPU(GPU.Type.GTX1080),
-                new GPU(GPU.Type.RTX3090),
-                new GPU(GPU.Type.RTX2080),
-                new GPU(GPU.Type.GTX1080));
-
-        List<CPU> expectedCpus = List.of(
-                new CPU(32),
-                new CPU(32),
-                new CPU(32),
-                new CPU(16),
-                new CPU(16),
-                new CPU(16),
-                new CPU(16));
-
-        List<ConferenceInformation> expectedConferenceInformations = List.of(
-                new ConferenceInformation("ICML", 20000),
-                new ConferenceInformation("NeurIPS", 25000),
-                new ConferenceInformation("CVPR", 30000),
-                new ConferenceInformation("ECCV", 40000),
-                new ConferenceInformation("AISTATS", 50000));
+        List<Developer> expectedDevelopers = SharedTestData.getDevelopers();
+        List<GPU> expectedGpus = SharedTestData.getGpus();
+        List<CPU> expectedCpus = SharedTestData.getCpus();
+        List<ConferenceInformation> expectedConferenceInformations = SharedTestData.getConferenceInformations();
 
         InputJson actual = new Gson().fromJson(inputJsonString, InputJson.class);
 
