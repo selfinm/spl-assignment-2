@@ -43,10 +43,21 @@ public class CRMSRunner {
 
     static class OutputJson {
         public List<Developer> developers;
+        public List<ConferenceInformation> conferenceInformations;
+        public Integer gpuTimeUsed;
+        public Integer cpuTimeUsed;
+
+        public OutputJson(List<Developer> developers, List<ConferenceInformation> conferenceInformations,
+                Integer gpuTimeUsed, Integer cpuTimeUsed) {
+            this.developers = developers;
+            this.conferenceInformations = conferenceInformations;
+            this.gpuTimeUsed = gpuTimeUsed;
+            this.cpuTimeUsed = cpuTimeUsed;
+        }
     }
 
     static class Args {
-        public Gson inputGson;
+        public InputJson input;
         public Path outputFile;
 
         public static Args fromArgs(String[] args) {
@@ -60,10 +71,10 @@ public class CRMSRunner {
                 throw new IllegalArgumentException("Given path doesn't exist: " + input.toString());
             }
 
-            Gson inputGson;
+            InputJson inputJson;
 
             try {
-                inputGson = readGson(input);
+                inputJson = readInputJson(input);
             } catch (IOException e) {
                 throw new IllegalArgumentException("Given path doesn't contain valid json");
             }
@@ -73,16 +84,16 @@ public class CRMSRunner {
                 throw new IllegalArgumentException("Given output path already exist: " + output.toString());
             }
 
-            return new Args(inputGson, output);
+            return new Args(inputJson, output);
         }
 
-        public Args(Gson inputGson, Path outputFile) {
-            this.inputGson = inputGson;
+        public Args(InputJson input, Path outputFile) {
+            this.input = input;
             this.outputFile = outputFile;
         }
     }
 
-    public static Gson run(Gson input) {
+    public static OutputJson run(InputJson input) {
         // 1. start all microservices except TimeService
         // DeveloperService
         // GpuService
@@ -98,35 +109,30 @@ public class CRMSRunner {
 
     public static void main(String[] args) throws IOException {
         Args parsedArgs = Args.fromArgs(args);
-        Gson inputGson = parsedArgs.inputGson;
+        InputJson inputGson = parsedArgs.input;
         Path output = parsedArgs.outputFile;
 
-        Gson outputGson = run(inputGson);
+        OutputJson outputJson = run(inputGson);
 
         // 4. create output file
-        outputGson.toJson(new FileWriter(parsedArgs.outputFile.toString()));
+        new Gson().toJson(outputJson, new FileWriter(output.toString()));
 
     }
 
-    private static Gson readGson(Path jsonFile) throws IOException {
+    private static InputJson readInputJson(Path inputFile) throws IOException {
         // create Gson instance
         Gson gson = new Gson();
 
         // create a reader
-        Reader reader = Files.newBufferedReader(jsonFile);
+        Reader reader = Files.newBufferedReader(inputFile);
 
         // convert JSON file to map
-        Map<?, ?> map = gson.fromJson(reader, Map.class);
-
-        // print map entries
-        for (Map.Entry<?, ?> entry : map.entrySet()) {
-            System.out.println(entry.getKey() + "=" + entry.getValue());
-        }
+        InputJson inputJson = gson.fromJson(reader, InputJson.class);
 
         // close reader
         reader.close();
 
-        return gson;
+        return inputJson;
     }
 
 }

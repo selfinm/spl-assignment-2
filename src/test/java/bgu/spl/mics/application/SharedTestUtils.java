@@ -2,6 +2,8 @@ package bgu.spl.mics.application;
 
 import java.util.List;
 
+import org.junit.Assert;
+
 import bgu.spl.mics.application.CRMSRunner.InputJson;
 import bgu.spl.mics.application.objects.CPU;
 import bgu.spl.mics.application.objects.ConferenceInformation;
@@ -11,7 +13,40 @@ import bgu.spl.mics.application.objects.Developer.Status;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
 
-public class SharedTestData {
+public class SharedTestUtils {
+    public static void assertConferenceInformationsEqual(ConferenceInformation expected,
+            ConferenceInformation actual) {
+        Assert.assertEquals(actual.getName(), expected.getName());
+        Assert.assertEquals(actual.getDate(), expected.getDate());
+    }
+
+    public static void assertModelsEqual(Model expected, Model actual) {
+        Assert.assertEquals(expected.getName(), actual.getName());
+        Assert.assertEquals(expected.getData().getType(), actual.getData().getType());
+        Assert.assertEquals(expected.getData().getSize(), actual.getData().getSize());
+    }
+
+    public static void assertDevelopersEqual(Developer expected, Developer actual) {
+        Assert.assertEquals(expected.getName(), actual.getName());
+        Assert.assertEquals(expected.getDepartment(), actual.getDepartment());
+        Assert.assertEquals(expected.getPublications(), actual.getPublications());
+        Assert.assertEquals(expected.getStatus(), actual.getStatus());
+        Assert.assertEquals(expected.getPapersRead(), actual.getPapersRead());
+
+        Assert.assertEquals(expected.getModels().size(), actual.getModels().size());
+        for (int i = 0; i < expected.getModels().size(); i++) {
+            assertModelsEqual(expected.getModels().get(i), actual.getModels().get(i));
+        }
+    }
+
+    public static void assertGpusEqual(GPU expected, GPU actual) {
+        Assert.assertEquals(expected.getType(), actual.getType());
+    }
+
+    public static void assertCpusEqual(CPU expected, CPU actual) {
+        Assert.assertEquals(actual.getCores(), expected.getCores());
+    }
+
     public static InputJson getInputJson() {
         List<Developer> developers = getDevelopers();
         List<GPU> gpus = getGpus();

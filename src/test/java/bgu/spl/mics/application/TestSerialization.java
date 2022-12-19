@@ -29,7 +29,7 @@ public class TestSerialization {
         Model actual = serializer.fromJson(modelString, Model.class);
         String actualDeserializedString = serializer.toJson(actual);
 
-        assertModelsEqual(expected, actual);
+        SharedTestUtils.assertModelsEqual(expected, actual);
 
         Assert.assertEquals(expectedDeserializedString, actualDeserializedString);
     }
@@ -44,7 +44,7 @@ public class TestSerialization {
 
         Developer actual = new Gson().fromJson(developerString, Developer.class);
 
-        assertDevelopersEqual(developer, actual);
+        SharedTestUtils.assertDevelopersEqual(developer, actual);
 
         // set models to null
         String actualDeserializedString = new Gson().toJson(actual);
@@ -58,7 +58,7 @@ public class TestSerialization {
         GPU expected = new GPU(GPU.Type.RTX3090);
         GPU actual = new Gson().fromJson(gpuString, GPU.class);
 
-        assertGpusEqual(expected, actual);
+        SharedTestUtils.assertGpusEqual(expected, actual);
         Assert.assertEquals(new Gson().toJson(actual), gpuString);
     }
 
@@ -69,7 +69,7 @@ public class TestSerialization {
         CPU expected = new CPU(1);
 
         CPU actual = new Gson().fromJson(cpuString, CPU.class);
-        assertCpusEqual(expected, actual);
+        SharedTestUtils.assertCpusEqual(expected, actual);
         Assert.assertEquals(new Gson().toJson(actual), cpuString);
     }
 
@@ -80,7 +80,7 @@ public class TestSerialization {
         ConferenceInformation expected = new ConferenceInformation("conference", 10);
 
         ConferenceInformation actual = new Gson().fromJson(confString, ConferenceInformation.class);
-        assertConferenceInformationsEqual(expected, actual);
+        SharedTestUtils.assertConferenceInformationsEqual(expected, actual);
         Assert.assertEquals(new Gson().toJson(actual), confString);
     }
 
@@ -88,68 +88,36 @@ public class TestSerialization {
     public void testInputJson() {
         String inputJsonString = "{\"developers\":[{\"name\":\"Dev-1\",\"department\":\"Dep-1\",\"status\":\"Intern\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"YOLO10\",\"data\":{\"type\":\"Images\",\"size\":200000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"ResNet9000\",\"data\":{\"type\":\"Images\",\"size\":200000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"LessEfficientNet\",\"data\":{\"type\":\"Images\",\"size\":20000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"DensestNet\",\"data\":{\"type\":\"Images\",\"size\":200000},\"status\":\"PreTrained\",\"results\":\"None\"}]},{\"name\":\"Dev-2\",\"department\":\"Dep-2\",\"status\":\"Junior\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"VIT\",\"data\":{\"type\":\"Images\",\"size\":100000000},\"status\":\"PreTrained\",\"results\":\"None\"}]},{\"name\":\"Dev-3\",\"department\":\"Dep-1\",\"status\":\"Senior\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"Bert\",\"data\":{\"type\":\"Text\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"GPT4\",\"data\":{\"type\":\"Text\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"GPT5\",\"data\":{\"type\":\"Text\",\"size\":200000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"GPT10\",\"data\":{\"type\":\"Text\",\"size\":50000},\"status\":\"PreTrained\",\"results\":\"None\"}]},{\"name\":\"Dev-4\",\"department\":\"Dep-2\",\"status\":\"Intern\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"Percepetron\",\"data\":{\"type\":\"Tabular\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"GNN\",\"data\":{\"type\":\"Tabular\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"MoreStyleGAN\",\"data\":{\"type\":\"Images\",\"size\":100000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"ConditionalGAN\",\"data\":{\"type\":\"Images\",\"size\":500000},\"status\":\"PreTrained\",\"results\":\"None\"}]},{\"name\":\"Dev-5\",\"department\":\"Dep-3\",\"status\":\"Junior\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"YOLO9000\",\"data\":{\"type\":\"Images\",\"size\":100000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"VIT2\",\"data\":{\"type\":\"Images\",\"size\":1000000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"MuchMoreEfficientNet\",\"data\":{\"type\":\"Images\",\"size\":20000},\"status\":\"PreTrained\",\"results\":\"None\"},{\"name\":\"DenserNet\",\"data\":{\"type\":\"Images\",\"size\":100000},\"status\":\"PreTrained\",\"results\":\"None\"}]}],\"gpus\":[{\"type\":\"GTX1080\"},{\"type\":\"RTX3090\"},{\"type\":\"RTX2080\"},{\"type\":\"GTX1080\"}],\"cpus\":[{\"cores\":32},{\"cores\":32},{\"cores\":32},{\"cores\":16},{\"cores\":16},{\"cores\":16},{\"cores\":16}],\"conferenceInformations\":[{\"name\":\"ICML\",\"date\":20000},{\"name\":\"NeurIPS\",\"date\":25000},{\"name\":\"CVPR\",\"date\":30000},{\"name\":\"ECCV\",\"date\":40000},{\"name\":\"AISTATS\",\"date\":50000}],\"TickTime\":1,\"Duration\":55000}";
 
-        List<Developer> expectedDevelopers = SharedTestData.getDevelopers();
-        List<GPU> expectedGpus = SharedTestData.getGpus();
-        List<CPU> expectedCpus = SharedTestData.getCpus();
-        List<ConferenceInformation> expectedConferenceInformations = SharedTestData.getConferenceInformations();
+        List<Developer> expectedDevelopers = SharedTestUtils.getDevelopers();
+        List<GPU> expectedGpus = SharedTestUtils.getGpus();
+        List<CPU> expectedCpus = SharedTestUtils.getCpus();
+        List<ConferenceInformation> expectedConferenceInformations = SharedTestUtils.getConferenceInformations();
 
         InputJson actual = new Gson().fromJson(inputJsonString, InputJson.class);
 
         Assert.assertEquals(expectedDevelopers.size(), actual.developers.size());
         for (int i = 0; i < expectedDevelopers.size(); i++) {
-            assertDevelopersEqual(expectedDevelopers.get(i), actual.developers.get(i));
+            SharedTestUtils.assertDevelopersEqual(expectedDevelopers.get(i), actual.developers.get(i));
         }
 
         Assert.assertEquals(expectedGpus.size(), actual.gpus.size());
         for (int i = 0; i < expectedGpus.size(); i++) {
-            assertGpusEqual(expectedGpus.get(i), actual.gpus.get(i));
+            SharedTestUtils.assertGpusEqual(expectedGpus.get(i), actual.gpus.get(i));
         }
 
         Assert.assertEquals(expectedCpus.size(), actual.cpus.size());
         for (int i = 0; i < expectedCpus.size(); i++) {
-            assertCpusEqual(expectedCpus.get(i), actual.cpus.get(i));
+            SharedTestUtils.assertCpusEqual(expectedCpus.get(i), actual.cpus.get(i));
         }
 
         Assert.assertEquals(expectedConferenceInformations.size(),
                 actual.conferenceInformations.size());
         for (int i = 0; i < expectedConferenceInformations.size(); i++) {
-            assertConferenceInformationsEqual(expectedConferenceInformations.get(i),
+            SharedTestUtils.assertConferenceInformationsEqual(expectedConferenceInformations.get(i),
                     actual.conferenceInformations.get(i));
         }
 
         Assert.assertEquals(inputJsonString, new Gson().toJson(actual));
-    }
-
-    private void assertConferenceInformationsEqual(ConferenceInformation expected, ConferenceInformation actual) {
-        Assert.assertEquals(actual.getName(), expected.getName());
-        Assert.assertEquals(actual.getDate(), expected.getDate());
-    }
-
-    private void assertModelsEqual(Model expected, Model actual) {
-        Assert.assertEquals(expected.getName(), actual.getName());
-        Assert.assertEquals(expected.getData().getType(), actual.getData().getType());
-        Assert.assertEquals(expected.getData().getSize(), actual.getData().getSize());
-    }
-
-    private void assertDevelopersEqual(Developer expected, Developer actual) {
-        Assert.assertEquals(expected.getName(), actual.getName());
-        Assert.assertEquals(expected.getDepartment(), actual.getDepartment());
-        Assert.assertEquals(expected.getPublications(), actual.getPublications());
-        Assert.assertEquals(expected.getStatus(), actual.getStatus());
-        Assert.assertEquals(expected.getPapersRead(), actual.getPapersRead());
-
-        Assert.assertEquals(expected.getModels().size(), actual.getModels().size());
-        for (int i = 0; i < expected.getModels().size(); i++) {
-            assertModelsEqual(expected.getModels().get(i), actual.getModels().get(i));
-        }
-    }
-
-    private void assertGpusEqual(GPU expected, GPU actual) {
-        Assert.assertEquals(expected.getType(), actual.getType());
-    }
-
-    private void assertCpusEqual(CPU expected, CPU actual) {
-        Assert.assertEquals(actual.getCores(), expected.getCores());
     }
 
 }
