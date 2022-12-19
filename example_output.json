@@ -1,0 +1,366 @@
+{
+    "developers": [
+        {
+            "name": "Dev-1",
+            "department": "Dep-1",
+            "status": "Intern",
+            "publications": 2,
+            "papersRead": 10,
+            "models": [
+                {
+                    "name": "YOLO10",
+                    "data": {
+                        "type": "Images",
+                        "size": 200000
+                    },
+                    "status": "Trained",
+                    "results": "Bad"
+                },
+                {
+                    "name": "ResNet9000",
+                    "data": {
+                        "type": "Images",
+                        "size": 200000
+                    },
+                    "status": "Trained",
+                    "results": "Bad"
+                },
+                {
+                    "name": "LessEfficientNet",
+                    "data": {
+                        "type": "Images",
+                        "size": 20000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "DensestNet",
+                    "data": {
+                        "type": "Images",
+                        "size": 200000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                }
+            ],
+            "publishedModels": [
+                {
+                    "name": "LessEfficientNet",
+                    "data": {
+                        "type": "Images",
+                        "size": 20000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "DensestNet",
+                    "data": {
+                        "type": "Images",
+                        "size": 200000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                }
+            ]
+        },
+        {
+            "name": "Dev-2",
+            "department": "Dep-2",
+            "status": "Junior",
+            "publications": 1,
+            "papersRead": 11,
+            "models": [
+                {
+                    "name": "VIT",
+                    "data": {
+                        "type": "Images",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                }
+            ],
+            "publishedModels": [
+                {
+                    "name": "VIT",
+                    "data": {
+                        "type": "Images",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                }
+            ]
+        },
+        {
+            "name": "Dev-3",
+            "department": "Dep-1",
+            "status": "Senior",
+            "publications": 4,
+            "papersRead": 8,
+            "models": [
+                {
+                    "name": "Bert",
+                    "data": {
+                        "type": "Text",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "GPT4",
+                    "data": {
+                        "type": "Text",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "GPT5",
+                    "data": {
+                        "type": "Text",
+                        "size": 200000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "GPT10",
+                    "data": {
+                        "type": "Text",
+                        "size": 50000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                }
+            ],
+            "publishedModels": [
+                {
+                    "name": "Bert",
+                    "data": {
+                        "type": "Text",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "GPT4",
+                    "data": {
+                        "type": "Text",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "GPT5",
+                    "data": {
+                        "type": "Text",
+                        "size": 200000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "GPT10",
+                    "data": {
+                        "type": "Text",
+                        "size": 50000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                }
+            ]
+        },
+        {
+            "name": "Dev-4",
+            "department": "Dep-2",
+            "status": "Intern",
+            "publications": 1,
+            "papersRead": 11,
+            "models": [
+                {
+                    "name": "Percepetron",
+                    "data": {
+                        "type": "Tabular",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Bad"
+                },
+                {
+                    "name": "GNN",
+                    "data": {
+                        "type": "Tabular",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Bad"
+                },
+                {
+                    "name": "MoreStyleGAN",
+                    "data": {
+                        "type": "Images",
+                        "size": 100000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "ConditionalGAN",
+                    "data": {
+                        "type": "Images",
+                        "size": 500000
+                    },
+                    "status": "Trained",
+                    "results": "Bad"
+                }
+            ],
+            "publishedModels": [
+                {
+                    "name": "MoreStyleGAN",
+                    "data": {
+                        "type": "Images",
+                        "size": 100000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                }
+            ]
+        },
+        {
+            "name": "Dev-5",
+            "department": "Dep-3",
+            "status": "Junior",
+            "publications": 4,
+            "papersRead": 8,
+            "models": [
+                {
+                    "name": "YOLO9000",
+                    "data": {
+                        "type": "Images",
+                        "size": 100000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "VIT2",
+                    "data": {
+                        "type": "Images",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "MuchMoreEfficientNet",
+                    "data": {
+                        "type": "Images",
+                        "size": 20000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "DenserNet",
+                    "data": {
+                        "type": "Images",
+                        "size": 100000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                }
+            ],
+            "publishedModels": [
+                {
+                    "name": "YOLO9000",
+                    "data": {
+                        "type": "Images",
+                        "size": 100000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "VIT2",
+                    "data": {
+                        "type": "Images",
+                        "size": 1000000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "MuchMoreEfficientNet",
+                    "data": {
+                        "type": "Images",
+                        "size": 20000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                },
+                {
+                    "name": "DenserNet",
+                    "data": {
+                        "type": "Images",
+                        "size": 100000
+                    },
+                    "status": "Trained",
+                    "results": "Good"
+                }
+            ]
+        }
+    ],
+    "conferenceInformations": [
+        {
+            "name": "ICML",
+            "date": 20000,
+            "publishedModels": [
+                "YOLO9000",
+                "VIT",
+                "GPT5"
+            ]
+        },
+        {
+            "name": "NeurIPS",
+            "date": 25000,
+            "publishedModels": [
+                "Bert",
+                "DenserNet",
+                "GPT10"
+            ]
+        },
+        {
+            "name": "CVPR",
+            "date": 10000,
+            "publishedModels": [
+                "VIT2",
+                "MoreStyleGAN"
+            ]
+        },
+        {
+            "name": "ECCV",
+            "date": 10000,
+            "publishedModels": [
+                "LessEfficientNet",
+                "GPT4"
+            ]
+        },
+        {
+            "name": "AISTATS",
+            "date": 20000,
+            "publishedModels": [
+                "MuchMoreEfficientNet",
+                "DensestNet"
+            ]
+        }
+    ],
+    "gpuTimeUsed": 25160,
+    "cpuTimeUsed": 28572
+}
