@@ -1,8 +1,5 @@
 package bgu.spl.mics.application.objects;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 import java.util.List;
 
 /**
@@ -16,23 +13,12 @@ public class Developer {
         Intern, Junior, Senior
     }
 
-    @SerializedName("name")
-    @Expose
     private String name;
-    @SerializedName("department")
-    @Expose
     private String department;
-    @SerializedName("status")
-    @Expose
     private Status status;
-
-    @SerializedName("publications")
-    @Expose
-    private Integer publications;
-
-    @SerializedName("papersRead")
-    @Expose
+    private int publications;
     private int papersRead;
+
     private List<Model> models;
 
     public Developer(String name, String department, Status status, List<Model> models) {
@@ -49,5 +35,21 @@ public class Developer {
 
     public List<Model> getModels() {
         return models;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getDepartment() {
+        return department;
+    }
+
+    public int getPublications() {
+        return publications;
+    }
+
+    public int getPapersRead() {
+        return papersRead;
     }
 }
