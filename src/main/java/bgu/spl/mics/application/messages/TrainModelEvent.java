@@ -11,6 +11,11 @@ public class TrainModelEvent implements Event<Model> {
         this.model = model;
     }
 
+    @Override
+    public String toString() {
+        return "TrainModelEvent [model=" + model + "]";
+    }
+
     public Model getModel() {
         return this.model;
     }

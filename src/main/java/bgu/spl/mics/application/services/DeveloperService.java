@@ -57,13 +57,6 @@ public class DeveloperService extends MicroService {
             System.out.println("Developer " + getName() + " sent " + model.getName() + " for training");
 
             while (!trainedModelFuture.isDone()) {
-                System.out.println("Developer " + getName() + " waiting for " + model.getName() + " training results");
-                try {
-                    Thread.sleep(10);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                    return;
-                }
             }
 
             Model trainedModel = trainedModelFuture.get();

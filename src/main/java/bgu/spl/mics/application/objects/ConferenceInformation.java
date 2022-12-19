@@ -1,7 +1,6 @@
 package bgu.spl.mics.application.objects;
 
 import java.util.Collection;
-import java.util.List;
 
 /**
  * Passive object representing information on a conference.

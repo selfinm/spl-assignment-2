@@ -11,6 +11,11 @@ public class PublishResultsEvent implements Event<Model> {
         this.model = model;
     }
 
+    @Override
+    public String toString() {
+        return "PublishResultsEvent [model=" + model + "]";
+    }
+
     public Model getModel() {
         return this.model;
     }

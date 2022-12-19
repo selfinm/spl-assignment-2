@@ -57,8 +57,6 @@ public class GPUService extends MicroService {
 
         // train next batch
         Model model = currentEvent.getModel();
-        System.out.println("GPUService " + getName() + " training model " + model.getName());
-
         gpu.trainBatch(model);
 
         if (model.trained()) {

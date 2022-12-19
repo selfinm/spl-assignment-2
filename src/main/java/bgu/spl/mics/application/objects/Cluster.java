@@ -123,12 +123,9 @@ public class Cluster {
     }
 
     public void notifyBatchProcessed(DataBatch batch) {
-        int time = 0;
         // wait for submitter to be registered
         while (!batchSubmitters.containsKey(batch)) {
             // TODO: maybe add timeout?
-            time++;
-            System.out.println("cluster - " + time + ", " + batchRemoved.containsKey(batch));
         }
 
         GPU submitter = batchSubmitters.remove(batch);

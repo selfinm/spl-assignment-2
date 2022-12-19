@@ -16,12 +16,13 @@ public class Developer {
     }
 
     private String name;
+
     private String department;
     private Status status;
     private Integer publications = 0;
     private AtomicInteger papersRead = new AtomicInteger(0);
-
     private List<Model> models;
+
     private List<Model> publishedModels = new ArrayList<>();
 
     public Developer() {
@@ -33,6 +34,13 @@ public class Developer {
         this.status = status;
 
         this.models = models;
+    }
+
+    @Override
+    public String toString() {
+        return "Developer [name=" + name + ", department=" + department + ", status=" + status + ", publications="
+                + publications + ", papersRead=" + papersRead + ", models=" + models + ", publishedModels="
+                + publishedModels + "]";
     }
 
     public List<Model> getPublishedModels() {

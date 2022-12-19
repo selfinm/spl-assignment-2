@@ -20,4 +20,9 @@ public class TestModelEvent implements Event<Model> {
     public Model getModel() {
         return model;
     }
+
+    @Override
+    public String toString() {
+        return "TestModelEvent [model=" + model + ", developer=" + developer + "]";
+    }
 }

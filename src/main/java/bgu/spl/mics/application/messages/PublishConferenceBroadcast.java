@@ -15,4 +15,9 @@ public class PublishConferenceBroadcast implements Broadcast {
     public Collection<String> getModelNames() {
         return modelNames;
     }
+
+    @Override
+    public String toString() {
+        return "PublishConferenceBroadcast [modelNames=" + modelNames + "]";
+    }
 }

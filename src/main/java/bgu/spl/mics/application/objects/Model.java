@@ -53,4 +53,9 @@ public class Model {
     public boolean trained() {
         return data.done();
     }
+
+    @Override
+    public String toString() {
+        return "Model [name=" + name + "]";
+    }
 }
