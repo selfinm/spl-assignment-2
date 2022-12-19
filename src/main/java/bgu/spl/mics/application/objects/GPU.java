@@ -21,11 +21,41 @@ public class GPU {
         RTX3090, RTX2080, GTX1080
     }
 
+    public static int getGpuTicks(GPU.Type type) {
+        switch (type) {
+            case RTX3090:
+                return 1;
+
+            case RTX2080:
+                return 2;
+
+            case GTX1080:
+                return 4;
+
+            default:
+                throw new UnsupportedOperationException("Unknown GPU type : " + type);
+        }
+    }
+
+    public static int maxBatches(GPU.Type type) {
+        switch (type) {
+            case RTX3090:
+                return 32;
+            case GTX1080:
+                return 16;
+            case RTX2080:
+                return 8;
+
+            default:
+                throw new UnsupportedOperationException("unknown GPU type " + type.toString());
+        }
+
+    }
+
     private Type type;
 
-    private Cluster cluster;
-
-    private Queue<DataBatch> disk;
+    private transient Cluster cluster;
+    private transient Queue<DataBatch> disk;
     /**
      * Keeps track of how many batches are either in the cluster being
      * processed, or being trained by the GPU. We will keep this
@@ -33,13 +63,14 @@ public class GPU {
      * the cluster at once, we will never have more than vramSize
      * batches in "vram".
      */
-    private int batchesInProcessing;
-    private int vramSize;
+    private transient int batchesInProcessing;
 
-    private Queue<DataBatch> batchesInTraining;
-    private Map<DataBatch, Integer> batchesTicksLeft;
+    private transient int vramSize;
+    private transient Queue<DataBatch> batchesInTraining;
 
-    private int gpuTicks;
+    private transient Map<DataBatch, Integer> batchesTicksLeft;
+
+    private transient int gpuTicks;
 
     public GPU(Type type) {
         this.type = type;
@@ -56,20 +87,8 @@ public class GPU {
         vramSize = GPU.maxBatches(type);
     }
 
-    static int getGpuTicks(GPU.Type type) {
-        switch (type) {
-            case RTX3090:
-                return 1;
-
-            case RTX2080:
-                return 2;
-
-            case GTX1080:
-                return 4;
-
-            default:
-                throw new UnsupportedOperationException("Unknown GPU type : " + type);
-        }
+    public Type getType() {
+        return type;
     }
 
     public void trainBatch(Model model) {
@@ -130,21 +149,6 @@ public class GPU {
             cluster.submitDataBatch(batch, this);
             batchesInProcessing++;
         }
-    }
-
-    static int maxBatches(GPU.Type type) {
-        switch (type) {
-            case RTX3090:
-                return 32;
-            case GTX1080:
-                return 16;
-            case RTX2080:
-                return 8;
-
-            default:
-                throw new UnsupportedOperationException("unknown GPU type " + type.toString());
-        }
-
     }
 
 }

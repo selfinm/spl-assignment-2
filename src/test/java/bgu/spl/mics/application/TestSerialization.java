@@ -9,8 +9,10 @@ import com.google.gson.Gson;
 
 import bgu.spl.mics.application.objects.Data;
 import bgu.spl.mics.application.objects.Developer;
+import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
 import bgu.spl.mics.application.objects.Developer.Status;
+import bgu.spl.mics.application.objects.GPU.Type;
 
 public class TestSerialization {
 
@@ -56,6 +58,17 @@ public class TestSerialization {
         actual = new Developer(actual.getName(), actual.getDepartment(), actual.getStatus(), null);
         String actualDeserializedString = new Gson().toJson(actual);
         Assert.assertEquals(expectedDeserializedString, actualDeserializedString);
+    }
+
+    @Test
+    public void testGpu() {
+        String gpuString = "{\"type\":\"RTX3090\"}";
+
+        GPU expected = new GPU(Type.RTX3090);
+        GPU actual = new Gson().fromJson(gpuString, GPU.class);
+
+        Assert.assertEquals(expected.getType(), actual.getType());
+        Assert.assertEquals(new Gson().toJson(actual), gpuString);
     }
 
 }
