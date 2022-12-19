@@ -1,5 +1,9 @@
 package bgu.spl.mics.application.objects;
 
+import static org.junit.Assert.fail;
+
+import com.google.gson.annotations.Expose;
+
 /**
  * Passive object representing a Deep Learning model.
  * Add all the fields described in the assignment as private fields.
@@ -20,7 +24,10 @@ public class Model {
     private Data data;
 
     private Status status = Status.PreTrained;
-    protected Results results = Results.None;
+    private Results results = Results.None;
+
+    public Model() {
+    }
 
     public Model(String name, Data data) {
         this.name = name;

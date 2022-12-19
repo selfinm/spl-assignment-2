@@ -45,7 +45,7 @@ public class TestDeveloperService {
 
         @Override
         public void setResults(Results results) {
-            this.results = Results.Good;
+            super.setResults(Results.Good);
         }
 
     }
