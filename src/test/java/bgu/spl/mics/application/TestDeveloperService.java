@@ -48,7 +48,7 @@ public class TestDeveloperService {
 
         // cpu 1 has 1 core so tacks 32 ticks
         // cpu 2 finishes before cpu 1
-        // gpu is GTX1080 so tacks 4 ticks
+        // gpu is GTX1080 so takes 4 ticks
         // data races - up to 4 ticks
         // total 36-40 ticks
         // testing - 0 ticks
