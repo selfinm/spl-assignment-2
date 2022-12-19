@@ -10,6 +10,7 @@ import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrainModelEvent;
 import bgu.spl.mics.application.objects.CPU;
+import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.Data;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
@@ -23,6 +24,7 @@ public class TestTrainModelEvent {
     @Before
     public void before() {
         MessageBusImpl.shutdown();
+        Cluster.shutdown();
 
         m = MessageBusImpl.getInstance();
     }

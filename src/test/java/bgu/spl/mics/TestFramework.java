@@ -28,7 +28,6 @@ public class TestFramework {
             @Override
             protected void initialize() {
                 subscribeBroadcast(ExampleBroadcast.class, b -> {
-                    System.out.println("called");
                     q.add(b.getSenderId());
                     terminate();
                 });

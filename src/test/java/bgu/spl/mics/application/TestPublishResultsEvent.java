@@ -14,6 +14,7 @@ import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
 import bgu.spl.mics.application.messages.PublishResultsEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.ConferenceInformation;
 import bgu.spl.mics.application.objects.Data;
 import bgu.spl.mics.application.objects.Developer;
@@ -27,6 +28,7 @@ public class TestPublishResultsEvent {
     @Before
     public void before() {
         MessageBusImpl.shutdown();
+        Cluster.shutdown();
 
         m = MessageBusImpl.getInstance();
     }

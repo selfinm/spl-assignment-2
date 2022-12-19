@@ -6,11 +6,10 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import bgu.spl.mics.Future;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.TestModelEvent;
-import bgu.spl.mics.application.messages.TickBroadcast;
+import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.Data;
 import bgu.spl.mics.application.objects.Developer;
 import bgu.spl.mics.application.objects.Developer.Status;
@@ -25,6 +24,7 @@ public class TestTestModelEvent {
     @Before
     public void before() {
         MessageBusImpl.shutdown();
+        Cluster.shutdown();
 
         m = MessageBusImpl.getInstance();
     }

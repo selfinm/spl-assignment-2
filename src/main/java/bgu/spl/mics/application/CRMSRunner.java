@@ -6,27 +6,19 @@ import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import bgu.spl.mics.Future;
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
-import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
 import bgu.spl.mics.application.objects.CPU;
 import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.ConferenceInformation;
-import bgu.spl.mics.application.objects.Data;
-import bgu.spl.mics.application.objects.Data.Type;
 import bgu.spl.mics.application.objects.Developer;
-import bgu.spl.mics.application.objects.Developer.Status;
 import bgu.spl.mics.application.objects.GPU;
-import bgu.spl.mics.application.objects.Model;
 import bgu.spl.mics.application.services.CPUService;
 import bgu.spl.mics.application.services.ConferenceService;
 import bgu.spl.mics.application.services.DeveloperService;
@@ -167,8 +159,7 @@ public class CRMSRunner {
             thread.join();
         }
 
-        System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(input));
-
+        // build output json
         OutputJson output = new OutputJson(
                 input.developers,
                 input.conferenceInformations,
