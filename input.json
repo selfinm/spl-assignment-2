@@ -247,17 +247,17 @@
         },
         {
             "name": "CVPR",
-            "date": 30000
+            "date": 10000
         },
         {
             "name": "ECCV",
-            "date": 40000
+            "date": 10000
         },
         {
             "name": "AISTATS",
-            "date": 50000
+            "date": 20000
         }
     ],
     "TickTime": 1,
-    "Duration": 55000
+    "Duration": 30000
 }
