@@ -67,6 +67,7 @@ public class CPU {
             batchesTicksLeft.remove(batch);
 
             cluster.notifyBatchProcessed(batch);
+            dataBatch = Optional.empty();
         }
     }
 
