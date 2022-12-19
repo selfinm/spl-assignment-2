@@ -1,6 +1,6 @@
 package bgu.spl.mics.application;
 
-import java.util.List;
+import java.util.Arrays;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -52,7 +52,7 @@ public class TestTestModelEvent {
         }
 
         Model model = new Model("test-model", new Data(Data.Type.Tabular, modelSize));
-        Developer developer = new Developer("test-dev", "test", Status.Intern, List.of(model));
+        Developer developer = new Developer("test-dev", "test", Status.Intern, Arrays.asList(model));
 
         Model testedModel = m.sendEvent(new TestModelEvent(model, developer)).get();
 

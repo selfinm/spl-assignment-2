@@ -1,7 +1,7 @@
 package bgu.spl.mics.application;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -40,8 +40,8 @@ public class TestPublishResultsEvent {
         ConferenceService confMS = new ConferenceService("conf-1", confInf);
 
         Model model = new Model("test-model", new Data(Data.Type.Tabular, 1000));
-        Developer developer = new Developer("developer", "test", Developer.Status.Intern, List.of());
-        Developer publisher = new Developer("publisher", "test", Developer.Status.Intern, List.of(model));
+        Developer developer = new Developer("developer", "test", Developer.Status.Intern, Arrays.asList());
+        Developer publisher = new Developer("publisher", "test", Developer.Status.Intern, Arrays.asList(model));
         DeveloperService developerMs = new DeveloperService("dev-ms", developer);
 
         Future<Collection<String>> publishedModels = new Future<>();

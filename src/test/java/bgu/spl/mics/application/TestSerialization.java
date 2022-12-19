@@ -1,5 +1,6 @@
 package bgu.spl.mics.application;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -40,7 +41,7 @@ public class TestSerialization {
         String expectedDeserializedString = "{\"name\":\"dev\",\"department\":\"department\",\"status\":\"Intern\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"model\",\"data\":{\"type\":\"Images\",\"size\":100},\"status\":\"PreTrained\",\"results\":\"None\"}],\"publishedModels\":[]}";
 
         Model model = new Model("model", new Data(Data.Type.Images, 100));
-        Developer developer = new Developer("dev", "department", Status.Intern, List.of(model));
+        Developer developer = new Developer("dev", "department", Status.Intern, Arrays.asList(model));
 
         Developer actual = new Gson().fromJson(developerString, Developer.class);
 

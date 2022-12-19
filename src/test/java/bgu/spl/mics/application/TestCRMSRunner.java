@@ -1,5 +1,6 @@
 package bgu.spl.mics.application;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.junit.Assert;
@@ -31,19 +32,19 @@ public class TestCRMSRunner {
 
     @Test
     public void testCRMSRunnerSmall() throws InterruptedException {
-        List<Model> models = List.of(
+        List<Model> models = Arrays.asList(
                 new Model("m1", new Data(Data.Type.Tabular, 10)),
                 new AlwaysGoodModel("m2", new Data(Data.Type.Tabular, 10)));
-        List<Developer> developers = List.of(
-                new Developer("dev1", "test", Developer.Status.Intern, List.of(models.get(0))),
-                new Developer("dev2", "test", Developer.Status.Intern, List.of(models.get(1))));
-        List<GPU> gpus = List.of(
+        List<Developer> developers = Arrays.asList(
+                new Developer("dev1", "test", Developer.Status.Intern, Arrays.asList(models.get(0))),
+                new Developer("dev2", "test", Developer.Status.Intern, Arrays.asList(models.get(1))));
+        List<GPU> gpus = Arrays.asList(
                 new GPU(GPU.Type.RTX3090),
                 new GPU(GPU.Type.GTX1080));
-        List<CPU> cpus = List.of(
+        List<CPU> cpus = Arrays.asList(
                 new CPU(1),
                 new CPU(2));
-        List<ConferenceInformation> conferenceInformations = List.of(
+        List<ConferenceInformation> conferenceInformations = Arrays.asList(
                 new ConferenceInformation("conf1", 100),
                 new ConferenceInformation("conf2", 200));
 

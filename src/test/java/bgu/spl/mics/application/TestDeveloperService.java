@@ -1,7 +1,7 @@
 package bgu.spl.mics.application;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -65,7 +65,7 @@ public class TestDeveloperService {
         ConferenceInformation confInf = new ConferenceInformation("conf-1-inf", publishDate);
         ConferenceService confMS = new ConferenceService("conf-1", confInf);
         Model model = new SharedTestUtils.AlwaysGoodModel("test-model", new Data(Type.Tabular, modelSize));
-        Developer developer = new Developer("test-dev", "test", Status.Intern, List.of(model));
+        Developer developer = new Developer("test-dev", "test", Status.Intern, Arrays.asList(model));
         DeveloperService developerMs = new DeveloperService("dev-ms", developer);
 
         // build tester microservice

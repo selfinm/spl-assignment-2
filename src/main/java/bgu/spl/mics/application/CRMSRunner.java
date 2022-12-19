@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.UUID;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 
 import bgu.spl.mics.MessageBusImpl;
 import bgu.spl.mics.MicroService;
