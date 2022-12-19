@@ -37,7 +37,7 @@ public class TestSerialization {
     @Test
     public void testDeveloper() {
         String developerString = "{\"name\":\"dev\",\"department\":\"department\",\"status\":\"Intern\",\"papersRead\":0,\"models\":[{\"name\":\"model\",\"data\":{\"type\":\"Images\",\"size\":100}}]}";
-        String expectedDeserializedString = "{\"name\":\"dev\",\"department\":\"department\",\"status\":\"Intern\",\"publications\":0,\"papersRead\":0}";
+        String expectedDeserializedString = "{\"name\":\"dev\",\"department\":\"department\",\"status\":\"Intern\",\"publications\":0,\"papersRead\":0,\"models\":[{\"name\":\"model\",\"data\":{\"type\":\"Images\",\"size\":100},\"status\":\"PreTrained\",\"results\":\"None\"}]}";
 
         Model model = new Model("model", new Data(Data.Type.Images, 100));
         Developer developer = new Developer("dev", "department", Status.Intern, List.of(model));
@@ -47,7 +47,6 @@ public class TestSerialization {
         assertDevelopersEqual(developer, actual);
 
         // set models to null
-        actual = new Developer(actual.getName(), actual.getDepartment(), actual.getStatus(), null);
         String actualDeserializedString = new Gson().toJson(actual);
         Assert.assertEquals(expectedDeserializedString, actualDeserializedString);
     }

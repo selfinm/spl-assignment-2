@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.objects;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Passive object representing single developer.
@@ -16,10 +17,13 @@ public class Developer {
     private String name;
     private String department;
     private Status status;
-    private int publications;
-    private int papersRead;
+    private AtomicInteger publications = new AtomicInteger(0);
+    private AtomicInteger papersRead = new AtomicInteger(0);
 
     private List<Model> models;
+
+    public Developer() {
+    }
 
     public Developer(String name, String department, Status status, List<Model> models) {
         this.name = name;
@@ -45,11 +49,11 @@ public class Developer {
         return department;
     }
 
-    public int getPublications() {
-        return publications;
+    public Integer getPublications() {
+        return publications.get();
     }
 
-    public int getPapersRead() {
-        return papersRead;
+    public Integer getPapersRead() {
+        return papersRead.get();
     }
 }

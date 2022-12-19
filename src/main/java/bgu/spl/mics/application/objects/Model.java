@@ -1,8 +1,6 @@
 package bgu.spl.mics.application.objects;
 
-import static org.junit.Assert.fail;
-
-import com.google.gson.annotations.Expose;
+import java.util.List;
 
 /**
  * Passive object representing a Deep Learning model.
@@ -25,6 +23,8 @@ public class Model {
 
     private Status status = Status.PreTrained;
     private Results results = Results.None;
+
+    private List<Model> publishedModels;
 
     public Model() {
     }
