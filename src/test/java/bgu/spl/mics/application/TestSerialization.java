@@ -8,6 +8,7 @@ import org.junit.Test;
 import com.google.gson.Gson;
 
 import bgu.spl.mics.application.objects.CPU;
+import bgu.spl.mics.application.objects.ConferenceInformation;
 import bgu.spl.mics.application.objects.Data;
 import bgu.spl.mics.application.objects.Developer;
 import bgu.spl.mics.application.objects.GPU;
@@ -81,6 +82,18 @@ public class TestSerialization {
         CPU actual = new Gson().fromJson(cpuString, CPU.class);
         Assert.assertEquals(actual.getCores(), expected.getCores());
         Assert.assertEquals(new Gson().toJson(actual), cpuString);
+    }
+
+    @Test
+    public void testConferenceInformation() {
+        String confString = "{\"name\":\"conference\",\"date\":10}";
+
+        ConferenceInformation expected = new ConferenceInformation("conference", 10);
+
+        ConferenceInformation actual = new Gson().fromJson(confString, ConferenceInformation.class);
+        Assert.assertEquals(actual.getName(), expected.getName());
+        Assert.assertEquals(actual.getDate(), expected.getDate());
+        Assert.assertEquals(new Gson().toJson(actual), confString);
     }
 
 }
