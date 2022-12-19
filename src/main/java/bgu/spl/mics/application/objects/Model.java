@@ -1,8 +1,5 @@
 package bgu.spl.mics.application.objects;
 
-import com.google.gson.annotations.Expose;
-import com.google.gson.annotations.SerializedName;
-
 /**
  * Passive object representing a Deep Learning model.
  * Add all the fields described in the assignment as private fields.
@@ -19,30 +16,15 @@ public class Model {
         PreTrained, Training, Trained, Tested
     }
 
-    @SerializedName("name")
-    @Expose
     private String name;
-
-    @SerializedName("type")
-    @Expose
-    private Data.Type type;
-
-    @SerializedName("size")
-    @Expose
-    private int size;
-
     private Data data;
-    private Status status;
-    protected Results results;
 
-    public Model(String name, Data.Type type, int size) {
+    private Status status = Status.PreTrained;
+    protected Results results = Results.None;
+
+    public Model(String name, Data data) {
         this.name = name;
-        this.type = type;
-        this.size = size;
-
-        data = new Data(type, size);
-        status = Status.PreTrained;
-        results = Results.None;
+        this.data = data;
     }
 
     public void setResults(Results results) {

@@ -67,7 +67,7 @@ public class TestPublishResultsEvent {
             e.printStackTrace();
         }
 
-        Model model = new Model("test-model", Data.Type.Tabular, 1000);
+        Model model = new Model("test-model", new Data(Data.Type.Tabular, 1000));
         model.setResults(Results.Good);
 
         Future<Model> publishedModel = m.sendEvent(new PublishResultsEvent(model));

@@ -51,7 +51,7 @@ public class TestTestModelEvent {
             }
         }
 
-        Model model = new Model("test-model", Data.Type.Tabular, modelSize);
+        Model model = new Model("test-model", new Data(Data.Type.Tabular, modelSize));
         Developer developer = new Developer("test-dev", "test", Status.Intern, List.of(model));
 
         Future<Model> testedModel = m.sendEvent(new TestModelEvent(model, developer));

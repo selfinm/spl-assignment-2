@@ -59,7 +59,7 @@ public class TestTrainModelEvent {
             }
         }
 
-        Model model = new Model("test-model", Data.Type.Tabular, modelSize);
+        Model model = new Model("test-model", new Data(Data.Type.Tabular, modelSize));
 
         Future<Model> trainedModel = m.sendEvent(new TrainModelEvent(model));
 

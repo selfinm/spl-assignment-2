@@ -15,6 +15,7 @@ import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.CPU;
 import bgu.spl.mics.application.objects.ConferenceInformation;
+import bgu.spl.mics.application.objects.Data;
 import bgu.spl.mics.application.objects.Developer;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
@@ -38,8 +39,8 @@ public class TestDeveloperService {
 
     class AlwaysGoodModel extends Model {
 
-        public AlwaysGoodModel(String name, Type type, int size) {
-            super(name, type, size);
+        public AlwaysGoodModel(String name, Data data) {
+            super(name, data);
         }
 
         @Override
@@ -74,7 +75,7 @@ public class TestDeveloperService {
         CPUService cpu2Ms = new CPUService("cs-2", cpu2);
         ConferenceInformation confInf = new ConferenceInformation("conf-1-inf", publishDate);
         ConferenceService confMS = new ConferenceService("conf-1", confInf);
-        Model model = new AlwaysGoodModel("test-model", Type.Tabular, modelSize);
+        Model model = new AlwaysGoodModel("test-model", new Data(Type.Tabular, modelSize));
         Developer developer = new Developer("test-dev", "test", Status.Intern, List.of(model));
         DeveloperService developerMs = new DeveloperService("dev-ms", developer);
 

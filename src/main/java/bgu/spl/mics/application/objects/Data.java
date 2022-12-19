@@ -2,17 +2,14 @@ package bgu.spl.mics.application.objects;
 
 import java.util.Optional;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * Passive object representing a data used by a model.
  * Add fields and methods to this class as you see fit (including public methods
  * and constructors).
  */
 public class Data {
-    private Type type;
-    private int processed;
-    private int size;
-    private int offset;
-
     /**
      * Enum representing the Data type.
      */
@@ -20,6 +17,14 @@ public class Data {
         Images, Text, Tabular, Voice;
 
     }
+
+    @Expose
+    private Type type;
+    @Expose
+    private int size;
+
+    private int processed;
+    private int offset;
 
     public Data(Type type, int size) {
         this.type = type;
