@@ -51,7 +51,7 @@ public class TestDeveloperService {
     }
 
     @Test
-    public void testTrainModelEvent() {
+    public void testDeveloperService() {
         int cpu1Cores = 1;
         int cpu2Cores = 2;
         GPU.Type gpuType = GPU.Type.GTX1080;
@@ -134,5 +134,7 @@ public class TestDeveloperService {
         System.out.println("FINAL TICK COUNT: " + totalTicks);
         Assert.assertEquals(confInf.getDate(), totalTicks);
 
+        Assert.assertEquals(1, developer.getPublications().intValue());
+        SharedTestUtils.assertModelsEqual(model, developer.getPublishedModels().get(0));
     }
 }

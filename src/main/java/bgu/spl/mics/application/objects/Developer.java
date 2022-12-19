@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.objects;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -17,10 +18,11 @@ public class Developer {
     private String name;
     private String department;
     private Status status;
-    private AtomicInteger publications = new AtomicInteger(0);
+    private Integer publications = 0;
     private AtomicInteger papersRead = new AtomicInteger(0);
 
     private List<Model> models;
+    private List<Model> publishedModels = new ArrayList<>();
 
     public Developer() {
     }
@@ -31,6 +33,10 @@ public class Developer {
         this.status = status;
 
         this.models = models;
+    }
+
+    public List<Model> getPublishedModels() {
+        return publishedModels;
     }
 
     public Status getStatus() {
@@ -50,10 +56,15 @@ public class Developer {
     }
 
     public Integer getPublications() {
-        return publications.get();
+        return publications;
     }
 
     public Integer getPapersRead() {
         return papersRead.get();
+    }
+
+    public void addPublishedModel(Model publishedModel) {
+        publications++;
+        publishedModels.add(publishedModel);
     }
 }

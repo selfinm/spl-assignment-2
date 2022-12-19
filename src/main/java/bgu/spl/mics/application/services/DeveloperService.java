@@ -38,7 +38,9 @@ public class DeveloperService extends MicroService {
             Model testedModel = sendEvent(new TestModelEvent(trainedModel, developer)).get();
 
             if (testedModel.getResults() == Results.Good) {
-                sendEvent(new PublishResultsEvent(testedModel)).get();
+                Model publishedModel = sendEvent(new PublishResultsEvent(testedModel)).get();
+                if (model != null)
+                    developer.addPublishedModel(publishedModel);
             }
         }
 
