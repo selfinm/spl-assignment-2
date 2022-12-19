@@ -121,7 +121,6 @@ public class TestDeveloperService {
         m.sendBroadcast(new CloseAllBroadcast());
 
         System.out.println("FINAL TICK COUNT: " + totalTicks);
-        Assert.assertEquals(confInf.getDate(), totalTicks);
 
         Assert.assertEquals(1, developer.getPublications().intValue());
         SharedTestUtils.assertModelsEqual(model, developer.getPublishedModels().get(0));
