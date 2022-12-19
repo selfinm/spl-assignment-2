@@ -100,6 +100,7 @@ public class GPU {
 
         // apply processed batches results
         Optional<Collection<DataBatch>> processedBatches = cluster.popProcessedBatches(this);
+
         if (processedBatches.isPresent()) {
             // TODO: what is model status???
             // the models data is "pre-processed" in the CPUs and also the processed

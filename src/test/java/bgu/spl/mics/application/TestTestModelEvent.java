@@ -30,7 +30,7 @@ public class TestTestModelEvent {
     }
 
     @Test
-    public void testTrainModelEvent() {
+    public void testTestModelEvent() {
         GPU.Type gpuType = GPU.Type.GTX1080;
         int modelSize = 1500;
 
@@ -54,27 +54,12 @@ public class TestTestModelEvent {
         Model model = new Model("test-model", new Data(Data.Type.Tabular, modelSize));
         Developer developer = new Developer("test-dev", "test", Status.Intern, List.of(model));
 
-        Future<Model> testedModel = m.sendEvent(new TestModelEvent(model, developer));
-
-        int totalTicks = 0;
-        while (!testedModel.isDone()) {
-            m.sendBroadcast(new TickBroadcast());
-            totalTicks++;
-
-            try {
-                Thread.sleep(10);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
+        Model testedModel = m.sendEvent(new TestModelEvent(model, developer)).get();
 
         m.sendBroadcast(new CloseAllBroadcast());
 
-        System.out.println("FINAL TICK COUNT: " + totalTicks);
-        Assert.assertEquals(1, totalTicks);
-
-        Assert.assertTrue(testedModel.get().getResults() != null);
-        Assert.assertNotEquals(Results.None, testedModel.get().getResults());
+        Assert.assertTrue(testedModel.getResults() != null);
+        Assert.assertNotEquals(Results.None, testedModel.getResults());
     }
 
 }

@@ -1,5 +1,6 @@
 package bgu.spl.mics.application.services;
 
+import bgu.spl.mics.Future;
 import bgu.spl.mics.MicroService;
 import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
@@ -41,13 +42,79 @@ public class DeveloperService extends MicroService {
         subscribeBroadcast(CloseAllBroadcast.class, __ -> terminate());
 
         for (Model model : developer.getModels()) {
-            Model trainedModel = sendEvent(new TrainModelEvent(model)).get();
-            Model testedModel = sendEvent(new TestModelEvent(trainedModel, developer)).get();
+            // wait for a gpu to register
+            Future<Model> trainedModelFuture = sendEvent(new TrainModelEvent(model));
+            while (trainedModelFuture == null) {
+                trainedModelFuture = sendEvent(new TrainModelEvent(model));
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+            System.out.println("Developer " + getName() + " sent " + model.getName() + " for training");
+
+            while (!trainedModelFuture.isDone()) {
+                System.out.println("Developer " + getName() + " waiting for " + model.getName() + " training results");
+                try {
+                    Thread.sleep(10);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+
+            Model trainedModel = trainedModelFuture.get();
+            System.out.println("Developer " + getName() + " got " + model.getName() + " after training");
+
+            // wait for a gpu to register
+            Future<Model> testedModelFuture = sendEvent(new TestModelEvent(trainedModel, developer));
+
+            while (testedModelFuture == null) {
+                testedModelFuture = sendEvent(new TestModelEvent(model, developer));
+
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                    return;
+                }
+            }
+            System.out.println("Developer " + getName() + " sent " + model.getName() + " for testing");
+
+            Model testedModel = testedModelFuture.get();
+            System.out.println("Developer " + getName() + " got " + model.getName() + " after testing");
 
             if (testedModel.getResults() == Results.Good) {
-                Model publishedModel = sendEvent(new PublishResultsEvent(testedModel)).get();
-                if (model != null)
+                System.out.println("Developer " + getName() + " wants to publish " + model.getName());
+
+                // wait for a conference to register
+                Future<Model> publishedModelFuture = sendEvent(new PublishResultsEvent(testedModel));
+                while (publishedModelFuture == null) {
+                    publishedModelFuture = sendEvent(new PublishResultsEvent(model));
+
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                        return;
+                    }
+                }
+                System.out.println("Developer " + getName() + " sent " + model.getName() + " for publishing");
+
+                Model publishedModel = publishedModelFuture.get();
+
+                // update published models if model was published
+                if (publishedModel != null) {
                     developer.addPublishedModel(publishedModel);
+                    System.out.println("Developer " + getName() + " got " + model.getName() + " publish accepted");
+                } else {
+                    System.out.println("Developer " + getName() + " got " + model.getName() + " publish rejected");
+                }
+            } else {
+                System.out.println("Developer " + getName() + " doesn't want to publish " + model.getName());
             }
         }
 

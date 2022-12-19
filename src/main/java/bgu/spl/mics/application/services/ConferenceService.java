@@ -49,6 +49,8 @@ public class ConferenceService extends MicroService {
 
         if (date == conferenceInformation.getDate()) {
             sendBroadcast(new PublishConferenceBroadcast(successfulModels));
+            conferenceInformation.setPublishedModels(successfulModels);
+
             terminate();
         }
     }

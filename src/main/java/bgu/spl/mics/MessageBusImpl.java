@@ -1,12 +1,16 @@
 package bgu.spl.mics;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+
+import bgu.spl.mics.application.messages.TickBroadcast;
 
 /**
  * The {@link MessageBusImpl class is the implementation of the MessageBus
@@ -54,7 +58,7 @@ public class MessageBusImpl implements MessageBus {
         subscribeMicroservice(type, m);
     }
 
-    private void subscribeMicroservice(Class<? extends Message> type, MicroService m) {
+    private synchronized void subscribeMicroservice(Class<? extends Message> type, MicroService m) {
         if (!serviceMessages.containsKey(m.getName())) {
             // TODO: do we want to handle this differently
             System.out.println("Service wasn't registered, doing nothing");
@@ -70,16 +74,27 @@ public class MessageBusImpl implements MessageBus {
     @Override
     public <T> void complete(Event<T> e, T result) {
         ((Future<T>) eventFutures.get(e)).resolve(result);
+        System.out.println("Completed event: " + e.toString());
     }
 
     @Override
     public void sendBroadcast(Broadcast b) {
-        List<String> subscribers = messageSubscribers.get(b.getClass());
-        if (subscribers == null)
+        // copy all currently subscribed microservice names
+        String[] subscribers = messageSubscribers.get(b.getClass()).toArray(new String[0]);
+        if (subscribers == null || subscribers.length == 0)
             return;
 
         for (String microservice : subscribers) {
-            serviceMessages.get(microservice).add(b);
+            Queue<Message> serviceQueue = serviceMessages.get(microservice);
+
+            if (serviceQueue == null)
+                System.out.println("Tried to send broadcast to un-registered service: " + microservice);
+            else
+                serviceQueue.add(b);
+        }
+
+        if (!(b instanceof TickBroadcast)) {
+            System.out.println("Sent broadcast: " + b.getClass().getName());
         }
     }
 
@@ -103,16 +118,18 @@ public class MessageBusImpl implements MessageBus {
 
         serviceMessages.get(subscriber).add(e);
 
+        System.out.println("Sent event: " + e.getClass().getName());
+
         return future;
     }
 
     @Override
-    public void register(MicroService m) {
+    public synchronized void register(MicroService m) {
         serviceMessages.put(m.getName(), new ConcurrentLinkedQueue<>());
     }
 
     @Override
-    public void unregister(MicroService m) {
+    public synchronized void unregister(MicroService m) {
         String name = m.getName();
         serviceMessages.remove(name);
 

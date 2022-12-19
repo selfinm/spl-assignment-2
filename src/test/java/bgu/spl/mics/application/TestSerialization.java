@@ -48,8 +48,6 @@ public class TestSerialization {
 
         // set models to null
         String actualDeserializedString = new Gson().toJson(actual);
-        System.out.println(expectedDeserializedString);
-        System.out.println(actualDeserializedString);
         Assert.assertEquals(expectedDeserializedString, actualDeserializedString);
     }
 

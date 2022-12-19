@@ -1,8 +1,7 @@
 package bgu.spl.mics.application.objects;
 
 import java.util.Optional;
-
-import com.google.gson.annotations.Expose;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Passive object representing a data used by a model.
@@ -18,27 +17,29 @@ public class Data {
 
     }
 
-    @Expose
     private Type type;
-    @Expose
-    private int size;
+    private Integer size;
 
-    private transient int processed;
-    private transient int offset;
+    private transient AtomicInteger processed;
+    private transient AtomicInteger offset;
 
     public Data(Type type, int size) {
         this.type = type;
         this.size = size;
 
-        processed = 0;
-        offset = 0;
+        processed = new AtomicInteger(0);
+        offset = new AtomicInteger(0);
     }
 
-    public int getProcessed() {
-        return processed;
+    public Integer getOffset() {
+        return offset.get();
     }
 
-    public int getSize() {
+    public Integer getProcessed() {
+        return processed.get();
+    }
+
+    public Integer getSize() {
         return size;
     }
 
@@ -47,21 +48,27 @@ public class Data {
     }
 
     public Optional<DataBatch> getNextBatch() {
-        if (offset >= size) {
+        Integer currentOffset = offset.getAndAdd(DataBatch.size);
+
+        if (currentOffset >= size) {
+            // make sure offset doesn't explode
+            if (currentOffset >= size + DataBatch.size * 3) {
+                offset.addAndGet(-DataBatch.size);
+            }
+
             return Optional.empty();
         } else {
-            DataBatch nextBatch = new DataBatch(this, processed);
-            offset += DataBatch.size;
+            DataBatch nextBatch = new DataBatch(this);
 
             return Optional.of(nextBatch);
         }
     }
 
     public boolean done() {
-        return processed >= size;
+        return processed.get() >= size;
     }
 
-    public void process(int amount) {
-        processed += amount;
+    public void process(Integer amount) {
+        processed.addAndGet(amount);
     }
 }

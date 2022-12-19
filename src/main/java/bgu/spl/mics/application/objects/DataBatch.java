@@ -9,18 +9,12 @@ public class DataBatch {
 
     public static int size = 1000;
     private Data data;
-    private int startIndex;
 
-    public DataBatch(Data data, int startIndex) {
+    public DataBatch(Data data) {
         this.data = data;
-        this.startIndex = startIndex;
     }
 
     public Data getData() {
         return data;
-    }
-
-    public int getStartIndex() {
-        return startIndex;
     }
 }

@@ -5,15 +5,33 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
-import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
+import bgu.spl.mics.Future;
+import bgu.spl.mics.MessageBusImpl;
+import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
 import bgu.spl.mics.application.objects.CPU;
+import bgu.spl.mics.application.objects.Cluster;
 import bgu.spl.mics.application.objects.ConferenceInformation;
+import bgu.spl.mics.application.objects.Data;
+import bgu.spl.mics.application.objects.Data.Type;
 import bgu.spl.mics.application.objects.Developer;
+import bgu.spl.mics.application.objects.Developer.Status;
 import bgu.spl.mics.application.objects.GPU;
+import bgu.spl.mics.application.objects.Model;
+import bgu.spl.mics.application.services.CPUService;
+import bgu.spl.mics.application.services.ConferenceService;
+import bgu.spl.mics.application.services.DeveloperService;
+import bgu.spl.mics.application.services.GPUService;
+import bgu.spl.mics.application.services.TimeService;
 
 /**
  * This is the Main class of Compute Resources Management System application.
@@ -93,21 +111,74 @@ public class CRMSRunner {
         }
     }
 
-    public static OutputJson run(InputJson input) {
-        // 1. start all microservices except TimeService
-        // DeveloperService
-        // GpuService
-        // CpuService
-        // ConferenceService
+    public static OutputJson run(InputJson input) throws InterruptedException {
+        List<MicroService> microServices = new ArrayList<>();
 
-        // 2. wait for all microservices to be registered
-        // start TimeService
+        // build microservices
+        for (Developer developer : input.developers) {
+            DeveloperService developerService = new DeveloperService("developer-" +
+                    developer.getName() + "-" + developer.getDepartment() + "-service-" + UUID.randomUUID(), developer);
+            microServices.add(developerService);
+        }
 
-        // 3. Wait for TimeService to finish duration
-        return null;
+        for (GPU gpu : input.gpus) {
+            GPUService gpuService = new GPUService("gpu-" + gpu.getType() + "-service-" + UUID.randomUUID(), gpu);
+            microServices.add(gpuService);
+        }
+
+        for (CPU cpu : input.cpus) {
+            CPUService cpuService = new CPUService("cpu-" + cpu.getCores() + "-service-" + UUID.randomUUID(), cpu);
+            microServices.add(cpuService);
+        }
+
+        for (ConferenceInformation conferenceInformation : input.conferenceInformations) {
+            ConferenceService conferenceService = new ConferenceService(
+                    "conference-" + conferenceInformation.getName() + "-service-" + UUID.randomUUID(),
+                    conferenceInformation);
+            microServices.add(conferenceService);
+        }
+
+        // start microservices
+        List<Thread> threads = new ArrayList<>();
+        for (MicroService microService : microServices) {
+            Thread thread = new Thread(microService);
+            thread.start();
+            threads.add(thread);
+        }
+
+        // wait for all services to be registered
+        while (!MessageBusImpl
+                .getInstance()
+                .isRegistered(microServices.toArray(new MicroService[0]))) {
+
+            Thread.sleep(100);
+        }
+
+        // start time service
+        TimeService timeService = new TimeService("time-service", input.TickTime, input.Duration);
+        microServices.add(timeService);
+        Thread timeServiceThread = new Thread(timeService);
+        timeServiceThread.start();
+        threads.add(timeServiceThread);
+
+        // wait for all services to stop
+        System.out.println("Waiting for threads to finish...");
+        for (Thread thread : threads) {
+            thread.join();
+        }
+
+        System.out.println(new GsonBuilder().setPrettyPrinting().create().toJson(input));
+
+        OutputJson output = new OutputJson(
+                input.developers,
+                input.conferenceInformations,
+                Cluster.getInstance().getGpuTimeUnitsUsed(),
+                Cluster.getInstance().getCpuTimeUnitsUsed());
+
+        return output;
     }
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         Args parsedArgs = Args.fromArgs(args);
         InputJson inputGson = parsedArgs.input;
         Path output = parsedArgs.outputFile;

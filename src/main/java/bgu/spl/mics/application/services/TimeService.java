@@ -35,9 +35,7 @@ public class TimeService extends MicroService {
 
     @Override
     protected void initialize() {
-        subscribeBroadcast(CloseAllBroadcast.class, _c -> {
-            this.terminate();
-        });
+        subscribeBroadcast(CloseAllBroadcast.class, __ -> this.terminate());
 
         Timer timer = new Timer();
 
@@ -47,12 +45,12 @@ public class TimeService extends MicroService {
             public void run() {
                 time += speed;
 
-                if (time >= duration) {
+                if (time < duration) {
+                    sendBroadcast(new TickBroadcast());
+                } else {
                     sendBroadcast(new CloseAllBroadcast());
                     timer.cancel();
                     timer.purge();
-                } else {
-                    sendBroadcast(new TickBroadcast());
                 }
             }
 

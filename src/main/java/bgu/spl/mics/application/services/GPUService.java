@@ -9,6 +9,7 @@ import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.TestModelEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.messages.TrainModelEvent;
+import bgu.spl.mics.application.objects.DataBatch;
 import bgu.spl.mics.application.objects.Developer;
 import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
@@ -56,6 +57,8 @@ public class GPUService extends MicroService {
 
         // train next batch
         Model model = currentEvent.getModel();
+        System.out.println("GPUService " + getName() + " training model " + model.getName());
+
         gpu.trainBatch(model);
 
         if (model.trained()) {
@@ -63,7 +66,6 @@ public class GPUService extends MicroService {
             complete(currentEvent, model);
             currentEvent = null;
         }
-
     }
 
     private void handleTestModelEvent(TestModelEvent event) {
