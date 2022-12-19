@@ -37,19 +37,6 @@ public class TestDeveloperService {
         m = MessageBusImpl.getInstance();
     }
 
-    class AlwaysGoodModel extends Model {
-
-        public AlwaysGoodModel(String name, Data data) {
-            super(name, data);
-        }
-
-        @Override
-        public void setResults(Results results) {
-            super.setResults(Results.Good);
-        }
-
-    }
-
     @Test
     public void testDeveloperService() {
         int cpu1Cores = 1;
@@ -75,7 +62,7 @@ public class TestDeveloperService {
         CPUService cpu2Ms = new CPUService("cs-2", cpu2);
         ConferenceInformation confInf = new ConferenceInformation("conf-1-inf", publishDate);
         ConferenceService confMS = new ConferenceService("conf-1", confInf);
-        Model model = new AlwaysGoodModel("test-model", new Data(Type.Tabular, modelSize));
+        Model model = new SharedTestUtils.AlwaysGoodModel("test-model", new Data(Type.Tabular, modelSize));
         Developer developer = new Developer("test-dev", "test", Status.Intern, List.of(model));
         DeveloperService developerMs = new DeveloperService("dev-ms", developer);
 

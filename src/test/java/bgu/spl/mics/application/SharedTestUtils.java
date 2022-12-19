@@ -14,6 +14,17 @@ import bgu.spl.mics.application.objects.GPU;
 import bgu.spl.mics.application.objects.Model;
 
 public class SharedTestUtils {
+    public static class AlwaysGoodModel extends Model {
+        public AlwaysGoodModel(String name, Data data) {
+            super(name, data);
+        }
+
+        @Override
+        public void setResults(Results results) {
+            super.setResults(Results.Good);
+        }
+    }
+
     public static void assertConferenceInformationsEqual(ConferenceInformation expected,
             ConferenceInformation actual) {
         Assert.assertEquals(actual.getName(), expected.getName());

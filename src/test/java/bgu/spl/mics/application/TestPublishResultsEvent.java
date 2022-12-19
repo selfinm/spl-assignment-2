@@ -1,6 +1,7 @@
 package bgu.spl.mics.application;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,9 +16,10 @@ import bgu.spl.mics.application.messages.PublishResultsEvent;
 import bgu.spl.mics.application.messages.TickBroadcast;
 import bgu.spl.mics.application.objects.ConferenceInformation;
 import bgu.spl.mics.application.objects.Data;
+import bgu.spl.mics.application.objects.Developer;
 import bgu.spl.mics.application.objects.Model;
-import bgu.spl.mics.application.objects.Model.Results;
 import bgu.spl.mics.application.services.ConferenceService;
+import bgu.spl.mics.application.services.DeveloperService;
 
 public class TestPublishResultsEvent {
     MessageBusImpl m;
@@ -34,6 +36,11 @@ public class TestPublishResultsEvent {
         // build micro services
         ConferenceInformation confInf = new ConferenceInformation("conf-1-inf", 10);
         ConferenceService confMS = new ConferenceService("conf-1", confInf);
+
+        Model model = new Model("test-model", new Data(Data.Type.Tabular, 1000));
+        Developer developer = new Developer("developer", "test", Developer.Status.Intern, List.of());
+        Developer publisher = new Developer("publisher", "test", Developer.Status.Intern, List.of(model));
+        DeveloperService developerMs = new DeveloperService("dev-ms", developer);
 
         Future<Collection<String>> publishedModels = new Future<>();
 
@@ -52,8 +59,11 @@ public class TestPublishResultsEvent {
         Thread confMsThread = new Thread(confMS);
         confMsThread.start();
 
+        Thread developerMsThread = new Thread(developerMs);
+        developerMsThread.start();
+
         // wait for services to start
-        while (!m.isRegistered(confMS, testerMs)) {
+        while (!m.isRegistered(confMS, testerMs, developerMs)) {
             try {
                 Thread.sleep(10);
             } catch (InterruptedException e) {
@@ -67,11 +77,9 @@ public class TestPublishResultsEvent {
             e.printStackTrace();
         }
 
-        Model model = new Model("test-model", new Data(Data.Type.Tabular, 1000));
-        model.setResults(Results.Good);
-
-        Future<Model> publishedModel = m.sendEvent(new PublishResultsEvent(model));
-        Assert.assertTrue(publishedModel.get() != null);
+        model.setResults(Model.Results.Good);
+        Model publishedModel = m.sendEvent(new PublishResultsEvent(model)).get();
+        Assert.assertTrue(publishedModel != null);
 
         int totalTicks = 0;
         while (!publishedModels.isDone()) {
@@ -89,6 +97,9 @@ public class TestPublishResultsEvent {
         System.out.println("FINAL TICK COUNT: " + totalTicks);
         Assert.assertEquals(confInf.getDate(), totalTicks);
         Assert.assertTrue(publishedModels.get().contains(model.getName()));
+
+        Assert.assertEquals(1, developer.getPapersRead().intValue());
+        Assert.assertEquals(0, publisher.getPapersRead().intValue());
     }
 
 }

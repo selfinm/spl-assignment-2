@@ -67,4 +67,15 @@ public class Developer {
         publications++;
         publishedModels.add(publishedModel);
     }
+
+    public void readPaper(String modelName) {
+        // check if model is this developer's
+        for (Model model : models) {
+            if (model.getName().equals(modelName)) {
+                return;
+            }
+        }
+
+        papersRead.incrementAndGet();
+    }
 }

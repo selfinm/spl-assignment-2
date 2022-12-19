@@ -1,6 +1,7 @@
 package bgu.spl.mics.application.services;
 
 import bgu.spl.mics.MicroService;
+import bgu.spl.mics.application.messages.CloseAllBroadcast;
 import bgu.spl.mics.application.messages.PublishConferenceBroadcast;
 import bgu.spl.mics.application.messages.PublishResultsEvent;
 import bgu.spl.mics.application.messages.TestModelEvent;
@@ -28,10 +29,16 @@ public class DeveloperService extends MicroService {
         this.developer = developer;
     }
 
+    void handlePublishConferenceBroadcast(PublishConferenceBroadcast broadcast) {
+        for (String modelName : broadcast.getModelNames()) {
+            developer.readPaper(modelName);
+        }
+    }
+
     @Override
     protected void initialize() {
-        subscribeBroadcast(PublishConferenceBroadcast.class, e -> {
-        });
+        subscribeBroadcast(PublishConferenceBroadcast.class, this::handlePublishConferenceBroadcast);
+        subscribeBroadcast(CloseAllBroadcast.class, __ -> terminate());
 
         for (Model model : developer.getModels()) {
             Model trainedModel = sendEvent(new TrainModelEvent(model)).get();
