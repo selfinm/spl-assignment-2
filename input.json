@@ -1,9 +1,9 @@
 {
-    "Students": [
+    "Developers": [
         {
-            "name": "Simba",
-            "department": "Computer Science",
-            "status": "MSc",
+            "name": "Dev-1",
+            "department": "Dep-1",
+            "status": "Intern",
             "models": [
                 {
                     "name": "YOLO10",
@@ -28,9 +28,9 @@
             ]
         },
         {
-            "name": "Zazu",
-            "department": "EE",
-            "status": "PhD",
+            "name": "Dev-2",
+            "department": "Dep-2",
+            "status": "Junior",
             "models": [
                 {
                     "name": "VIT",
@@ -40,9 +40,9 @@
             ]
         },
         {
-            "name": "Pumba",
-            "department": "Computer Science",
-            "status": "PhD",
+            "name": "Dev-3",
+            "department": "Dep-1",
+            "status": "Senior",
             "models": [
                 {
                     "name": "Bert",
@@ -67,9 +67,9 @@
             ]
         },
         {
-            "name": "Timon",
-            "department": "SE",
-            "status": "MSc",
+            "name": "Dev-4",
+            "department": "Dep-2",
+            "status": "Intern",
             "models": [
                 {
                     "name": "Percepetron",
@@ -94,9 +94,9 @@
             ]
         },
         {
-            "name": "Nala",
-            "department": "Computer Science",
-            "status": "PhD",
+            "name": "Dev-5",
+            "department": "Dep-3",
+            "status": "Junior",
             "models": [
                 {
                     "name": "YOLO9000",
