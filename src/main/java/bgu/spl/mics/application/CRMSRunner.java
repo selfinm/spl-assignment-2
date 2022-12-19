@@ -75,7 +75,7 @@ public class CRMSRunner {
                 throw new IllegalArgumentException("CRMSRunner expecting a single argument: input file");
             }
 
-            Path input = Path.of(args[0]).toAbsolutePath();
+            Path input = Path.of(args[0]);
 
             if (!Files.exists(input)) {
                 throw new IllegalArgumentException("Given path doesn't exist: " + input.toString());
@@ -89,7 +89,7 @@ public class CRMSRunner {
                 throw new IllegalArgumentException("Given path doesn't contain valid json");
             }
 
-            Path output = Path.of(args[1]).toAbsolutePath();
+            Path output = Path.of(args[1]);
             if (Files.exists(output)) {
                 throw new IllegalArgumentException("Given output path already exist: " + output.toString());
             }
