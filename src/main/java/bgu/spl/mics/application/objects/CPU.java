@@ -22,26 +22,26 @@ public class CPU {
      * batch, and takes a new batch for processing.
      * </p>
      * So why is data a collection and not just a DataBatch?
+     * 
+     * We don't use this attribute, so it is always set as null.
      */
-    private transient Collection<DataBatch> data;
+    private transient Collection<DataBatch> data = null;
 
-    private transient Cluster cluster;
-    private transient Map<DataBatch, Integer> batchesTicksLeft;
+    private transient Map<DataBatch, Integer> batchesTicksLeft = new ConcurrentHashMap<>();
 
     /**
      * Using this instead of data, since we don't need a collection
      */
-    private transient Optional<DataBatch> dataBatch;
+    private transient Optional<DataBatch> dataBatch = Optional.empty();
+
+    public CPU() {
+        Cluster.getInstance().addCpu(this);
+    }
 
     public CPU(int cores) {
         this.cores = cores;
 
-        data = new ConcurrentLinkedQueue<>();
-        cluster = Cluster.getInstance();
-        cluster.addCpu(this);
-
-        batchesTicksLeft = new ConcurrentHashMap<>();
-        dataBatch = Optional.empty();
+        Cluster.getInstance().addCpu(this);
     }
 
     public int getCores() {
@@ -50,7 +50,7 @@ public class CPU {
 
     public void tick() {
         // get next batch from cluster if needed
-        dataBatch = dataBatch.isPresent() ? dataBatch : cluster.getNextDataBatch();
+        dataBatch = dataBatch.isPresent() ? dataBatch : Cluster.getInstance().getNextDataBatch();
 
         // if no new batches are available, we do nothing
         if (!dataBatch.isPresent()) {
@@ -61,12 +61,12 @@ public class CPU {
 
         int ticksLeft = batchesTicksLeft.getOrDefault(batch, calcBatchTicks(batch.getData().getType()));
         batchesTicksLeft.put(batch, ticksLeft - 1);
-        cluster.cpuTickUsed();
+        Cluster.getInstance().cpuTickUsed();
 
         if (batchesTicksLeft.get(batch) == 0) {
             batchesTicksLeft.remove(batch);
 
-            cluster.notifyBatchProcessed(batch);
+            Cluster.getInstance().notifyBatchProcessed(batch);
             dataBatch = Optional.empty();
         }
     }

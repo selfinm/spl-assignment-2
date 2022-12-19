@@ -20,15 +20,16 @@ public class Data {
     private Type type;
     private Integer size;
 
-    private transient AtomicInteger processed;
-    private transient AtomicInteger offset;
+    private transient AtomicInteger processed = new AtomicInteger(0);
+    private transient AtomicInteger offset = new AtomicInteger(0);
+
+    public Data() {
+
+    }
 
     public Data(Type type, int size) {
         this.type = type;
         this.size = size;
-
-        processed = new AtomicInteger(0);
-        offset = new AtomicInteger(0);
     }
 
     public Integer getOffset() {

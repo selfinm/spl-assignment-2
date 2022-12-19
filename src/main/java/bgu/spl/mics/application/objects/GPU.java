@@ -54,8 +54,7 @@ public class GPU {
 
     private Type type;
 
-    private transient Cluster cluster;
-    private transient Queue<DataBatch> disk;
+    private transient Queue<DataBatch> disk = new ArrayDeque<>();
     /**
      * Keeps track of how many batches are either in the cluster being
      * processed, or being trained by the GPU. We will keep this
@@ -63,28 +62,20 @@ public class GPU {
      * the cluster at once, we will never have more than vramSize
      * batches in "vram".
      */
-    private transient int batchesInProcessing;
+    private transient int batchesInProcessing = 0;
 
-    private transient int vramSize;
-    private transient Queue<DataBatch> batchesInTraining;
+    private transient Queue<DataBatch> batchesInTraining = new ArrayDeque<>();
 
-    private transient Map<DataBatch, Integer> batchesTicksLeft;
+    private transient Map<DataBatch, Integer> batchesTicksLeft = new HashMap<>();
 
-    private transient int gpuTicks;
+    public GPU() {
+        Cluster.getInstance().addGpu(this);
+    }
 
     public GPU(Type type) {
         this.type = type;
 
-        cluster = Cluster.getInstance();
-        cluster.addGpu(this);
-
-        disk = new ArrayDeque<>();
-        batchesInProcessing = 0;
-        batchesInTraining = new ArrayDeque<>();
-        batchesTicksLeft = new HashMap<>();
-
-        gpuTicks = GPU.getGpuTicks(type);
-        vramSize = GPU.maxBatches(type);
+        Cluster.getInstance().addGpu(this);
     }
 
     public Type getType() {
@@ -99,7 +90,7 @@ public class GPU {
         }
 
         // apply processed batches results
-        Optional<Collection<DataBatch>> processedBatches = cluster.popProcessedBatches(this);
+        Optional<Collection<DataBatch>> processedBatches = Cluster.getInstance().popProcessedBatches(this);
 
         if (processedBatches.isPresent()) {
             // TODO: what is model status???
@@ -115,7 +106,7 @@ public class GPU {
 
             for (DataBatch batch : processedBatches.get()) {
                 batchesInTraining.add(batch);
-                batchesTicksLeft.put(batch, gpuTicks);
+                batchesTicksLeft.put(batch, GPU.getGpuTicks(type));
             }
         }
 
@@ -126,7 +117,7 @@ public class GPU {
             // TODO: do we count ticks by batch or by tick?
             // lets say in one tick CPU processed 5 batches
             // is that 1 tick or 5 ticks for the cluster cpuTickUsed?
-            cluster.gpuTickUsed();
+            Cluster.getInstance().gpuTickUsed();
 
             if (ticksLeft == 0) {
                 batchesInTraining.remove();
@@ -141,13 +132,13 @@ public class GPU {
         }
 
         // send as many new batches as possible
-        int amountToSend = vramSize - batchesInProcessing;
+        int amountToSend = maxBatches(type) - batchesInProcessing;
         for (int i = 0; i < amountToSend; i++) {
             DataBatch batch = disk.poll();
             if (batch == null)
                 break;
 
-            cluster.submitDataBatch(batch, this);
+            Cluster.getInstance().submitDataBatch(batch, this);
             batchesInProcessing++;
         }
     }
