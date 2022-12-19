@@ -23,8 +23,8 @@ public class Data {
     @Expose
     private int size;
 
-    private int processed;
-    private int offset;
+    private transient int processed;
+    private transient int offset;
 
     public Data(Type type, int size) {
         this.type = type;
