@@ -1,29 +1,47 @@
 {
-    "Developers": [
+    "developers": [
         {
             "name": "Dev-1",
             "department": "Dep-1",
             "status": "Intern",
+            "publications": 0,
+            "papersRead": 0,
             "models": [
                 {
                     "name": "YOLO10",
-                    "type": "Images",
-                    "size": 200000
+                    "data": {
+                        "type": "Images",
+                        "size": 200000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "ResNet9000",
-                    "type": "Images",
-                    "size": 200000
+                    "data": {
+                        "type": "Images",
+                        "size": 200000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "LessEfficientNet",
-                    "type": "Images",
-                    "size": 20000
+                    "data": {
+                        "type": "Images",
+                        "size": 20000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "DensestNet",
-                    "type": "Images",
-                    "size": 200000
+                    "data": {
+                        "type": "Images",
+                        "size": 200000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 }
             ]
         },
@@ -31,11 +49,17 @@
             "name": "Dev-2",
             "department": "Dep-2",
             "status": "Junior",
+            "publications": 0,
+            "papersRead": 0,
             "models": [
                 {
                     "name": "VIT",
-                    "type": "Images",
-                    "size": 100000000
+                    "data": {
+                        "type": "Images",
+                        "size": 100000000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 }
             ]
         },
@@ -43,26 +67,44 @@
             "name": "Dev-3",
             "department": "Dep-1",
             "status": "Senior",
+            "publications": 0,
+            "papersRead": 0,
             "models": [
                 {
                     "name": "Bert",
-                    "type": "Text",
-                    "size": 1000000
+                    "data": {
+                        "type": "Text",
+                        "size": 1000000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "GPT4",
-                    "type": "Text",
-                    "size": 1000000
+                    "data": {
+                        "type": "Text",
+                        "size": 1000000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "GPT5",
-                    "type": "Text",
-                    "size": 200000
+                    "data": {
+                        "type": "Text",
+                        "size": 200000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "GPT10",
-                    "type": "Text",
-                    "size": 50000
+                    "data": {
+                        "type": "Text",
+                        "size": 50000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 }
             ]
         },
@@ -70,26 +112,44 @@
             "name": "Dev-4",
             "department": "Dep-2",
             "status": "Intern",
+            "publications": 0,
+            "papersRead": 0,
             "models": [
                 {
                     "name": "Percepetron",
-                    "type": "Tabular",
-                    "size": 1000000
+                    "data": {
+                        "type": "Tabular",
+                        "size": 1000000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "GNN",
-                    "type": "Tabular",
-                    "size": 1000000
+                    "data": {
+                        "type": "Tabular",
+                        "size": 1000000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "MoreStyleGAN",
-                    "type": "Images",
-                    "size": 100000
+                    "data": {
+                        "type": "Images",
+                        "size": 100000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "ConditionalGAN",
-                    "type": "Images",
-                    "size": 500000
+                    "data": {
+                        "type": "Images",
+                        "size": 500000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 }
             ]
         },
@@ -97,46 +157,86 @@
             "name": "Dev-5",
             "department": "Dep-3",
             "status": "Junior",
+            "publications": 0,
+            "papersRead": 0,
             "models": [
                 {
                     "name": "YOLO9000",
-                    "type": "Images",
-                    "size": 100000
+                    "data": {
+                        "type": "Images",
+                        "size": 100000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "VIT2",
-                    "type": "Images",
-                    "size": 1000000
+                    "data": {
+                        "type": "Images",
+                        "size": 1000000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "MuchMoreEfficientNet",
-                    "type": "Images",
-                    "size": 20000
+                    "data": {
+                        "type": "Images",
+                        "size": 20000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 },
                 {
                     "name": "DenserNet",
-                    "type": "Images",
-                    "size": 100000
+                    "data": {
+                        "type": "Images",
+                        "size": 100000
+                    },
+                    "status": "PreTrained",
+                    "results": "None"
                 }
             ]
         }
     ],
-    "GPUS": [
-        "RTX3090",
-        "RTX3090",
-        "RTX2080",
-        "GTX1080"
+    "gpus": [
+        {
+            "type": "GTX1080"
+        },
+        {
+            "type": "RTX3090"
+        },
+        {
+            "type": "RTX2080"
+        },
+        {
+            "type": "GTX1080"
+        }
     ],
-    "CPUS": [
-        32,
-        32,
-        32,
-        16,
-        16,
-        16,
-        16
+    "cpus": [
+        {
+            "cores": 32
+        },
+        {
+            "cores": 32
+        },
+        {
+            "cores": 32
+        },
+        {
+            "cores": 16
+        },
+        {
+            "cores": 16
+        },
+        {
+            "cores": 16
+        },
+        {
+            "cores": 16
+        }
     ],
-    "Conferences": [
+    "conferenceInformations": [
         {
             "name": "ICML",
             "date": 20000
