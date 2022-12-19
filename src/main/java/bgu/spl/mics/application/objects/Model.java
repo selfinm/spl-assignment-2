@@ -1,7 +1,5 @@
 package bgu.spl.mics.application.objects;
 
-import java.util.List;
-
 /**
  * Passive object representing a Deep Learning model.
  * Add all the fields described in the assignment as private fields.
@@ -23,8 +21,6 @@ public class Model {
 
     private Status status = Status.PreTrained;
     private Results results = Results.None;
-
-    private List<Model> publishedModels;
 
     public Model() {
     }
